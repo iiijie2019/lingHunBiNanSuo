@@ -1,10 +1,12 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { Link } from 'expo-router';
+import { useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { getRandomQuote } from '@/constants/quotes';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { today, useStore } from '@/stores/useStore';
 
@@ -16,6 +18,8 @@ export default function HomeScreen() {
   const todaysDate = today();
   const weekday = WEEKDAY_NAMES[now.getDay()];
   const dateStr = `${now.getMonth() + 1}月${now.getDate()}日`;
+
+  const dailyQuote = useMemo(() => getRandomQuote(), []);
 
   const completedToday = habits.filter((h) => h.completedDates.includes(todaysDate)).length;
   const totalHabits = habits.length;
@@ -52,10 +56,10 @@ export default function HomeScreen() {
             <ThemedView style={styles.quoteBar} />
             <ThemedView style={styles.quoteBody}>
               <ThemedText type="small" themeColor="textSecondary" style={styles.quoteText}>
-                "不积跬步，无以至千里；不积小流，无以成江海。"
+                "{dailyQuote.text}"
               </ThemedText>
               <ThemedText type="small" themeColor="textSecondary" style={styles.quoteAuthor}>
-                —— 《荀子·劝学》
+                —— {dailyQuote.author}
               </ThemedText>
             </ThemedView>
           </ThemedView>
@@ -212,6 +216,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.two, borderRadius: Spacing.three,
     justifyContent: 'space-around',
   },
-  moodStripItem: { alignItems: 'center', gap: Spacing.half },
+  moodStripItem: { alignItems: 'center', gap: Spacing.half, padding:5, borderRadius: 5, },
   moodStripEmoji: { fontSize: 28, lineHeight: 36 },
 });

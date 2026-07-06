@@ -1,12 +1,13 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { useDispatch, useStore } from '@/stores/useStore';
 
 const COLORS = [
   { name: '红色', hex: '#FF3B30' },
@@ -25,21 +26,41 @@ function randomPair() {
 }
 
 export default function ColorWordScreen() {
+  const dispatch = useDispatch();
+  const { gameRecords } = useStore();
+  const bestRecord = gameRecords.colorWord;
   const [pair, setPair] = useState(randomPair);
   const [score, setScore] = useState(0);
   const [total, setTotal] = useState(0);
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
+  const scoreRef = React.useRef(0);
+  const totalRef = React.useRef(0);
 
   const answer = useCallback((colorName: string) => {
     const correct = colorName === pair.ink.name;
     setFeedback(correct ? 'correct' : 'wrong');
-    if (correct) setScore((s) => s + 1);
-    setTotal((t) => t + 1);
+    if (correct) {
+      setScore((s) => {
+        const newScore = s + 1;
+        scoreRef.current = newScore;
+        return newScore;
+      });
+    }
+    setTotal((t) => {
+      const newTotal = t + 1;
+      totalRef.current = newTotal;
+      return newTotal;
+    });
+    // Save best record after each answer
+    const newTotal = totalRef.current + 1;
+    const newScore = correct ? scoreRef.current + 1 : scoreRef.current;
+    const accuracy = newTotal > 0 ? Math.round((newScore / newTotal) * 100) : 0;
+    dispatch({ type: 'SAVE_GAME_RECORD', game: 'colorWord', score: newScore, extra1: accuracy });
     setTimeout(() => {
       setPair(randomPair());
       setFeedback(null);
     }, 500);
-  }, [pair]);
+  }, [pair, dispatch]);
 
   return (
     <ThemedView style={styles.container}>
@@ -82,6 +103,16 @@ export default function ColorWordScreen() {
             </Pressable>
           ))}
         </ThemedView>
+
+        {/* 历史最佳 */}
+        {bestRecord.games > 0 && (
+          <ThemedView style={styles.bestRow}>
+            <ThemedText style={styles.bestEmoji}>🏆</ThemedText>
+            <ThemedText type="small" themeColor="textSecondary">
+              最佳 {bestRecord.best} 题 · 准确率 {bestRecord.extra1}%
+            </ThemedText>
+          </ThemedView>
+        )}
 
         {/* 得分 */}
         <ThemedView style={styles.scoreRow}>
@@ -156,4 +187,9 @@ const styles = StyleSheet.create({
   feedback: { textAlign: 'center', marginTop: Spacing.three, fontSize: 18, fontWeight: '600' },
   feedbackCorrect: { color: '#34C759' },
   feedbackWrong: { color: '#FF3B30' },
+  bestRow: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: Spacing.one, marginTop: Spacing.three,
+  },
+  bestEmoji: { fontSize: 16, lineHeight: 22 },
 });

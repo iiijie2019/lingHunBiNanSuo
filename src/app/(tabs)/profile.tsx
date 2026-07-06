@@ -1,11 +1,12 @@
 import { FontAwesome } from '@expo/vector-icons';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { useStore } from '@/stores/useStore';
 
 const MENU_ITEMS = [
   { icon: 'cog' as const, title: '设置' },
@@ -13,7 +14,39 @@ const MENU_ITEMS = [
   { icon: 'info-circle' as const, title: '关于' },
 ];
 
+/** Calculate consecutive days from today backwards for habit completion */
+function calcStreak(completedDates: Set<string>): number {
+  let streak = 0;
+  const d = new Date();
+  while (true) {
+    const key = d.toISOString().slice(0, 10);
+    if (completedDates.has(key)) {
+      streak++;
+      d.setDate(d.getDate() - 1);
+    } else {
+      // Check if today is not yet completed — allow streak to continue from yesterday
+      const todayKey = new Date().toISOString().slice(0, 10);
+      if (key === todayKey) {
+        d.setDate(d.getDate() - 1);
+        continue;
+      }
+      break;
+    }
+  }
+  return streak;
+}
+
 export default function ProfileScreen() {
+  const { habits, moods } = useStore();
+
+  const totalCompletedDates = useMemo(() => {
+    const dates = new Set<string>();
+    habits.forEach((h) => h.completedDates.forEach((d) => dates.add(d)));
+    return dates;
+  }, [habits]);
+
+  const streak = useMemo(() => calcStreak(totalCompletedDates), [totalCompletedDates]);
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -31,15 +64,15 @@ export default function ProfileScreen() {
         {/* 统计小卡片 */}
         <ThemedView style={styles.statsRow}>
           <ThemedView type="backgroundElement" style={styles.statItem}>
-            <ThemedText type="title" style={styles.statNum}>0</ThemedText>
+            <ThemedText type="title" style={styles.statNum}>{habits.length}</ThemedText>
             <ThemedText type="small" themeColor="textSecondary">习惯</ThemedText>
           </ThemedView>
           <ThemedView type="backgroundElement" style={styles.statItem}>
-            <ThemedText type="title" style={styles.statNum}>0</ThemedText>
+            <ThemedText type="title" style={styles.statNum}>{moods.length}</ThemedText>
             <ThemedText type="small" themeColor="textSecondary">心情</ThemedText>
           </ThemedView>
           <ThemedView type="backgroundElement" style={styles.statItem}>
-            <ThemedText type="title" style={styles.statNum}>0天</ThemedText>
+            <ThemedText type="title" style={styles.statNum}>{streak}天</ThemedText>
             <ThemedText type="small" themeColor="textSecondary">连续</ThemedText>
           </ThemedView>
         </ThemedView>

@@ -7,13 +7,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { useDispatch, useStore } from '@/stores/useStore';
 
 type Phase = 'waiting' | 'ready' | 'go' | 'result' | 'too-early';
 
 export default function ReactionScreen() {
+  const dispatch = useDispatch();
+  const { gameRecords } = useStore();
+  const savedBest = gameRecords.reaction.best;
   const [phase, setPhase] = useState<Phase>('waiting');
   const [reaction, setReaction] = useState<number | null>(null);
-  const [best, setBest] = useState<number | null>(null);
+  const [best, setBest] = useState<number | null>(savedBest < 9999 ? savedBest : null);
   const [results, setResults] = useState<number[]>([]);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const goTimeRef = useRef(0);
@@ -53,6 +57,13 @@ export default function ReactionScreen() {
     setPhase('waiting');
     setReaction(null);
   };
+
+  // Save record after each reaction test
+  useEffect(() => {
+    if (phase === 'result' && reaction !== null) {
+      dispatch({ type: 'SAVE_GAME_RECORD', game: 'reaction', score: reaction });
+    }
+  }, [phase, reaction, dispatch]);
 
   useEffect(() => cleanup, [cleanup]);
 

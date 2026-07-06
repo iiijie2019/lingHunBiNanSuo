@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { useDispatch, useStore } from '@/stores/useStore';
 
 const GRID = 9;
 const MOLE_UP_MS = 800;
@@ -17,6 +18,9 @@ const BOMB_CHANCE = 0.22;      // 22% 概率出炸弹
 const BOMB_PENALTY = 3;        // 打到炸弹扣分
 
 export default function WhackAMoleScreen() {
+  const dispatch = useDispatch();
+  const { gameRecords } = useStore();
+  const bestRecord = gameRecords.whackAMole;
   const [started, setStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
@@ -24,6 +28,7 @@ export default function WhackAMoleScreen() {
   const [hitFlash, setHitFlash] = useState<{ hole: number; type: 'mole' | 'bomb' } | null>(null);
   const [combo, setCombo] = useState(0);
   const [timeLeft, setTimeLeft] = useState(GAME_DURATION);
+  const gameSavedRef = useRef(false);
 
   const scoreRef = useRef(0);
   const comboRef = useRef(0);
@@ -74,6 +79,7 @@ export default function WhackAMoleScreen() {
     comboRef.current = 0;
     molesHitRef.current = 0;
     bombsHitRef.current = 0;
+    gameSavedRef.current = false;
     gameStartRef.current = Date.now();
 
     timerRef.current = setInterval(() => {
@@ -99,6 +105,14 @@ export default function WhackAMoleScreen() {
       clearMole();
     };
   }, [clearMole]);
+
+  // Save record when game ends
+  useEffect(() => {
+    if (gameOver && !gameSavedRef.current) {
+      gameSavedRef.current = true;
+      dispatch({ type: 'SAVE_GAME_RECORD', game: 'whackAMole', score: scoreRef.current });
+    }
+  }, [gameOver, dispatch]);
 
   const hit = (hole: number) => {
     if (!started || gameOver) return;
@@ -243,6 +257,14 @@ export default function WhackAMoleScreen() {
                 </ThemedText>
               </>
             )}
+            {bestRecord.games > 0 && (
+              <ThemedView style={styles.bestRecordRow}>
+                <ThemedText style={styles.bestRecordEmoji}>🏆</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary">
+                  最高分 {bestRecord.best} · 共 {bestRecord.games} 局
+                </ThemedText>
+              </ThemedView>
+            )}
             <Pressable style={styles.startBtn} onPress={start}>
               <FontAwesome name={gameOver ? 'refresh' : 'play'} size={18} color="#FFFFFF" />
               <ThemedText style={styles.startBtnText}>
@@ -376,4 +398,6 @@ const styles = StyleSheet.create({
   },
   mole: { position: 'absolute', bottom: 0, alignItems: 'center' },
   moleEmoji: { fontSize: 44, lineHeight: 52 },
+  bestRecordRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.one },
+  bestRecordEmoji: { fontSize: 16, lineHeight: 22 },
 });

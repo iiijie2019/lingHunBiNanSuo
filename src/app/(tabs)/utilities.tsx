@@ -14,6 +14,9 @@ const TOOLS = [
   { route: '/utilities/dice-roll' as const, icon: 'cube' as const, color: '#AF52DE', title: '掷骰子', desc: '1-4 颗骰子，显示结果与合计' },
   { route: '/utilities/coin-flip' as const, icon: 'dot-circle-o' as const, color: '#FF9500', title: '抛硬币', desc: '二选一决定，含正反统计' },
   { route: '/utilities/random-color' as const, icon: 'paint-brush' as const, color: '#34C759', title: '随机颜色', desc: '生成 HEX 颜色与 RGB 值' },
+
+
+  
 ];
 
 export default function UtilitiesScreen() {

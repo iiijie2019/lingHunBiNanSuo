@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { useDispatch, useStore } from '@/stores/useStore';
 
 type Question = { a: number; op: '+' | '-' | '×'; b: number; answer: number };
 
@@ -32,6 +33,9 @@ function genOptions(correct: number): number[] {
 
 export default function MathChallengeScreen() {
   const isDark = useColorScheme() === 'dark';
+  const dispatch = useDispatch();
+  const { gameRecords } = useStore();
+  const bestRecord = gameRecords.mathChallenge;
   const [question, setQuestion] = useState<Question | null>(null);
   const [options, setOptions] = useState<number[]>([]);
   const [score, setScore] = useState(0);
@@ -41,6 +45,7 @@ export default function MathChallengeScreen() {
   const [started, setStarted] = useState(false);
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const gameSavedRef = useRef(false);
 
   const nextQuestion = useCallback(() => {
     const q = genQuestion();
@@ -54,6 +59,7 @@ export default function MathChallengeScreen() {
     setScore(0);
     setTotal(0);
     setTimeLeft(30);
+    gameSavedRef.current = false;
     nextQuestion();
     timerRef.current = setInterval(() => {
       setTimeLeft((t) => {
@@ -68,6 +74,15 @@ export default function MathChallengeScreen() {
   }, [nextQuestion]);
 
   useEffect(() => () => { if (timerRef.current) clearInterval(timerRef.current); }, []);
+
+  // Save record when game ends
+  useEffect(() => {
+    if (gameOver && !gameSavedRef.current) {
+      gameSavedRef.current = true;
+      const accuracy = total > 0 ? Math.round((score / total) * 100) : 0;
+      dispatch({ type: 'SAVE_GAME_RECORD', game: 'mathChallenge', score, extra1: accuracy });
+    }
+  }, [gameOver, score, total, dispatch]);
 
   const answer = (v: number) => {
     if (gameOver || !question) return;
@@ -118,6 +133,13 @@ export default function MathChallengeScreen() {
             <ThemedText type="default" themeColor="textSecondary">
               共 {total} 题，正确率 {total > 0 ? Math.round((score / total) * 100) : 0}%
             </ThemedText>
+            {bestRecord.games > 0 && (
+              <ThemedView style={styles.bestRow}>
+                <ThemedText type="small" themeColor="textSecondary">
+                  🏆 历史最佳 {bestRecord.best} 题 · 准确率 {bestRecord.extra1}% · 共 {bestRecord.games} 局
+                </ThemedText>
+              </ThemedView>
+            )}
             <Pressable style={styles.startBtn} onPress={start}>
               <FontAwesome name="refresh" size={18} color="#FFFFFF" />
               <ThemedText style={styles.startBtnText}>再来一局</ThemedText>
@@ -235,4 +257,5 @@ const styles = StyleSheet.create({
   feedback: { textAlign: 'center', marginTop: Spacing.two, fontSize: 32, lineHeight: 40 },
   feedbackCorrect: { color: '#34C759' },
   feedbackWrong: { color: '#FF3B30' },
+  bestRow: { paddingTop: Spacing.one },
 });
