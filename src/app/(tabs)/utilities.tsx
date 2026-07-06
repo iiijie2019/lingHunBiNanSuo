@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 const TOOLS = [
   { route: '/utilities/random-number' as const, icon: 'random' as const, color: '#208AEF', title: '随机数生成器', desc: '在指定范围内生成随机整数' },
@@ -16,6 +17,8 @@ const TOOLS = [
 ];
 
 export default function UtilitiesScreen() {
+  const theme = useTheme();
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -28,19 +31,21 @@ export default function UtilitiesScreen() {
           </ThemedView>
 
           <ThemedView style={styles.toolList}>
-            {TOOLS.map((tool, index) => (
+            {TOOLS.map((tool) => (
               <Link key={tool.route} href={tool.route as Href} asChild>
                 <Pressable>
-                  <ThemedView type="backgroundElement" style={[
-                    styles.toolCard,
-                    index === TOOLS.length - 1 && styles.toolCardLast,
-                  ]}>
+                  <ThemedView
+                    type="backgroundElement"
+                    style={[styles.toolCard, { borderColor: theme.backgroundSelected }]}
+                  >
                     <ThemedView style={[styles.iconBox, { backgroundColor: tool.color + '15' }]}>
                       <FontAwesome name={tool.icon} size={22} color={tool.color} />
                     </ThemedView>
                     <ThemedView style={styles.toolInfo}>
-                      <ThemedText type="default">{tool.title}</ThemedText>
-                      <ThemedText type="small" themeColor="textSecondary">{tool.desc}</ThemedText>
+                      <ThemedText type="default" style={styles.toolTitle}>{tool.title}</ThemedText>
+                      <ThemedText type="small" themeColor="textSecondary" numberOfLines={1}>
+                        {tool.desc}
+                      </ThemedText>
                     </ThemedView>
                     <FontAwesome name="angle-right" size={16} color="#C0C0C0" />
                   </ThemedView>
@@ -60,15 +65,18 @@ const styles = StyleSheet.create({
   scroll: { gap: Spacing.three, paddingBottom: Spacing.six },
   header: { paddingVertical: Spacing.three, gap: Spacing.half },
 
-  toolList: { borderRadius: Spacing.three, overflow: 'hidden' },
+  toolList: { gap: Spacing.two },
   toolCard: {
     flexDirection: 'row', alignItems: 'center',
-    padding: Spacing.four, gap: Spacing.three,
+    padding: Spacing.three,
+    borderRadius: Spacing.three,
+    gap: Spacing.three,
+    borderWidth: StyleSheet.hairlineWidth,
   },
-  toolCardLast: {},
   iconBox: {
-    width: 48, height: 48, borderRadius: 14,
+    width: 48, height: 48, borderRadius: Spacing.two,
     alignItems: 'center', justifyContent: 'center',
   },
-  toolInfo: { flex: 1, gap: 2 },
+  toolInfo: { flex: 1, gap: Spacing.half, padding:10, borderRadius:10 },
+  toolTitle: { fontWeight: '600' },
 });

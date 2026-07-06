@@ -29,7 +29,7 @@ export default function DiceRollScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <Pressable style={styles.backRow} onPress={() => router.back()}>
+        <Pressable style={styles.backRow} onPress={() => router.dismiss()}>
           <FontAwesome name="angle-left" size={20} color="#AF52DE" />
           <ThemedText type="default" style={styles.backLabel}>返回</ThemedText>
         </Pressable>
@@ -113,11 +113,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'center', gap: Spacing.three,
     paddingVertical: Spacing.three,
   },
-  diceFace: { fontSize: 56 },
+  diceFace: { fontSize: 56, lineHeight: 64 },
   rolling: { opacity: 0.25 },
 
   totalBox: { alignItems: 'center', gap: Spacing.half },
-  totalText: { fontSize: 36, fontWeight: '800', color: '#AF52DE' },
+  totalText: { fontSize: 36, fontWeight: '800', color: '#AF52DE', lineHeight: 44 },
 
   btn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',

@@ -52,7 +52,7 @@ export default function GuessNumberScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <Pressable style={styles.backRow} onPress={() => router.back()}>
+        <Pressable style={styles.backRow} onPress={() => router.dismiss()}>
           <FontAwesome name="angle-left" size={20} color="#208AEF" />
           <ThemedText type="default" style={styles.backLabel}>返回</ThemedText>
         </Pressable>
@@ -164,18 +164,18 @@ const styles = StyleSheet.create({
     flex: 1, borderRadius: Spacing.three,
     paddingHorizontal: Spacing.three, paddingVertical: Spacing.two,
   },
-  input: { fontSize: 28, fontWeight: '700', textAlign: 'center', padding: 0 },
+  input: { fontSize: 28, fontWeight: '700', textAlign: 'center', padding: 0, lineHeight: 36 },
   guessBtn: {
     backgroundColor: '#208AEF', paddingHorizontal: Spacing.six,
     borderRadius: Spacing.three, alignItems: 'center', justifyContent: 'center',
   },
   guessBtnText: { color: '#FFFFFF', fontSize: 18, fontWeight: '700' },
 
-  message: { fontSize: 18, fontWeight: '600' },
+  message: { fontSize: 18, fontWeight: '600', lineHeight: 24 },
 
   // Win
   winBox: { alignItems: 'center', gap: Spacing.two, paddingVertical: Spacing.two },
-  winEmoji: { fontSize: 64 },
+  winEmoji: { fontSize: 64, lineHeight: 76 },
   winTitle: { color: '#34C759' },
   resetBtn: {
     flexDirection: 'row', alignItems: 'center',

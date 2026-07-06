@@ -84,7 +84,7 @@ export default function MathChallengeScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <Pressable style={styles.backRow} onPress={() => router.back()}>
+        <Pressable style={styles.backRow} onPress={() => router.dismiss()}>
           <FontAwesome name="angle-left" size={20} color="#FF6B6B" />
           <ThemedText type="default" style={styles.backLabel}>返回</ThemedText>
         </Pressable>
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.six, padding: Spacing.six,
     borderRadius: Spacing.three, alignItems: 'center', gap: Spacing.three,
   },
-  startEmoji: { fontSize: 64 },
+  startEmoji: { fontSize: 64, lineHeight: 76 },
   startDesc: { textAlign: 'center' },
   startBtn: {
     flexDirection: 'row', alignItems: 'center',
@@ -204,14 +204,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.five, borderRadius: Spacing.three, gap: Spacing.two,
   },
   startBtnText: { color: '#FFFFFF', fontSize: 18, fontWeight: '700' },
-  endScore: { color: '#FF6B6B', fontSize: 40 },
+  endScore: { color: '#FF6B6B', fontSize: 40, lineHeight: 48 },
 
   // Question
   questionCard: {
     marginTop: Spacing.four, paddingVertical: Spacing.five, paddingHorizontal: Spacing.four,
     borderRadius: Spacing.three, alignItems: 'center',
   },
-  questionText: { fontSize: 40, fontWeight: '800' },
+  questionText: { fontSize: 40, fontWeight: '800', lineHeight: 48 },
 
   // Options
   optionsGrid: {
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5, borderColor: '#C0C0C0', marginBottom: Spacing.one,
   },
   optionPressed: { opacity: 0.5 },
-  optionText: { fontSize: 22, fontWeight: '700' },
+  optionText: { fontSize: 22, fontWeight: '700', lineHeight: 28 },
 
   inlineScore: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
   },
   scoreDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#34C759' },
 
-  feedback: { textAlign: 'center', marginTop: Spacing.two, fontSize: 32 },
+  feedback: { textAlign: 'center', marginTop: Spacing.two, fontSize: 32, lineHeight: 40 },
   feedbackCorrect: { color: '#34C759' },
   feedbackWrong: { color: '#FF3B30' },
 });

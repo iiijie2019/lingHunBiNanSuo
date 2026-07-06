@@ -13,6 +13,10 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
 
   return (
     <Text
+      {...Platform.select({
+        android: { includeFontPadding: false },
+        default: {},
+      })}
       style={[
         { color: theme[themeColor ?? 'text'] },
         type === 'default' && styles.default,

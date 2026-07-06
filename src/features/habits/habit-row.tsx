@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   checkboxDone: { backgroundColor: '#34C759', borderColor: '#34C759' },
   checkboxPressed: { opacity: 0.6 },
   info: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two, flex: 1 },
-  emoji: { fontSize: 22 },
+  emoji: { fontSize: 22, lineHeight: 28 },
   textGroup: { gap: 1 },
   weekDots: { flexDirection: 'row', gap: 4, paddingRight: Spacing.one },
   dot: { width: 10, height: 10, borderRadius: 5 },

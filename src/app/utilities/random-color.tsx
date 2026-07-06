@@ -26,7 +26,7 @@ export default function RandomColorScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <Pressable style={styles.backRow} onPress={() => router.back()}>
+        <Pressable style={styles.backRow} onPress={() => router.dismiss()}>
           <FontAwesome name="angle-left" size={20} color="#34C759" />
           <ThemedText type="default" style={styles.backLabel}>返回</ThemedText>
         </Pressable>
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     height: 170, borderRadius: Spacing.three,
     alignItems: 'center', justifyContent: 'center',
   },
-  colorHex: { fontSize: 26, fontWeight: '800', fontFamily: 'monospace' },
+  colorHex: { fontSize: 26, fontWeight: '800', fontFamily: 'monospace', lineHeight: 34 },
 
   infoCard: { borderRadius: Spacing.two, padding: Spacing.three, gap: Spacing.two },
   infoRow: {

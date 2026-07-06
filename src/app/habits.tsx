@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', gap: Spacing.two,
     paddingVertical: Spacing.six * 2, borderRadius: Spacing.three,
   },
-  emptyEmoji: { fontSize: 48 },
+  emptyEmoji: { fontSize: 48, lineHeight: 56 },
 
   // Add button
   addButton: {
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     borderWidth: 2, borderColor: 'transparent',
   },
   emojiSelected: { borderColor: '#208AEF', backgroundColor: '#208AEF15' },
-  emojiText: { fontSize: 24 },
+  emojiText: { fontSize: 24, lineHeight: 32 },
   inputWrapper: {
     borderRadius: Spacing.three, paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,

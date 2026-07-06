@@ -6,7 +6,8 @@
   "build": {
     "production": {
       "env": {
-        "APP_NAME": "灵魂避难所"
+        "APP_NAME": "灵魂避难所",
+        "NODE_ENV": "production"
       },
       "android": {
         "buildType": "apk",

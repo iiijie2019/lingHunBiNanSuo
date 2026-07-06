@@ -161,9 +161,9 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.three,
   },
   headerLeft: { gap: Spacing.half },
-  greeting: { fontSize: 30, fontWeight: '700' },
+  greeting: { fontSize: 30, fontWeight: '700', lineHeight: 38 },
   moodButton: { padding: Spacing.one },
-  headerMood: { fontSize: 40 },
+  headerMood: { fontSize: 40, lineHeight: 48 },
   addMoodBtn: {
     width: 32, height: 32, borderRadius: 16,
     backgroundColor: '#208AEF', alignItems: 'center', justifyContent: 'center',
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     width: 44, height: 44, borderRadius: 14,
     alignItems: 'center', justifyContent: 'center',
   },
-  statValue: { fontSize: 24, fontWeight: '700' },
+  statValue: { fontSize: 24, fontWeight: '700', lineHeight: 30 },
 
   // Section
   sectionHeader: {
@@ -213,5 +213,5 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   moodStripItem: { alignItems: 'center', gap: Spacing.half },
-  moodStripEmoji: { fontSize: 28 },
+  moodStripEmoji: { fontSize: 28, lineHeight: 36 },
 });

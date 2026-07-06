@@ -20,7 +20,7 @@ export default function RandomNumberScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <Pressable style={styles.backRow} onPress={() => router.back()}>
+        <Pressable style={styles.backRow} onPress={() => router.dismiss()}>
           <FontAwesome name="angle-left" size={20} color="#208AEF" />
           <ThemedText type="default" style={styles.backLabel}>返回</ThemedText>
         </Pressable>
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     borderWidth: 1.5, borderColor: '#208AEF30',
   },
-  rangeValue: { fontSize: 28, fontWeight: '700', minWidth: 48, textAlign: 'center' },
+  rangeValue: { fontSize: 28, fontWeight: '700', minWidth: 48, textAlign: 'center', lineHeight: 36 },
 
   btn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
@@ -111,5 +111,5 @@ const styles = StyleSheet.create({
   btnText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
 
   resultBox: { alignItems: 'center', gap: Spacing.two, paddingTop: Spacing.two },
-  result: { fontSize: 72, fontWeight: '800', color: '#208AEF' },
+  result: { fontSize: 72, fontWeight: '800', color: '#208AEF', lineHeight: 84 },
 });

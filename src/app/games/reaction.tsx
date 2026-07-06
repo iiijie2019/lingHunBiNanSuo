@@ -63,7 +63,7 @@ export default function ReactionScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <Pressable style={styles.backRow} onPress={() => { cleanup(); router.back(); }}>
+        <Pressable style={styles.backRow} onPress={() => { cleanup(); router.dismiss(); }}>
           <FontAwesome name="angle-left" size={20} color="#FF9500" />
           <ThemedText type="default" style={styles.backLabel}>返回</ThemedText>
         </Pressable>
@@ -170,11 +170,11 @@ const styles = StyleSheet.create({
   },
   startBtnText: { color: '#FFFFFF', fontSize: 18, fontWeight: '700' },
 
-  readyEmoji: { fontSize: 64 },
-  goText: { fontSize: 36, fontWeight: '900', color: '#FFFFFF' },
-  earlyEmoji: { fontSize: 48 },
+  readyEmoji: { fontSize: 64, lineHeight: 76 },
+  goText: { fontSize: 36, fontWeight: '900', color: '#FFFFFF', lineHeight: 44 },
+  earlyEmoji: { fontSize: 48, lineHeight: 56 },
   earlyText: { color: '#FFFFFF' },
-  resultMs: { fontSize: 48, fontWeight: '800', color: '#FFFFFF' },
+  resultMs: { fontSize: 48, fontWeight: '800', color: '#FFFFFF', lineHeight: 56 },
   resultHint: { color: '#FFFFFF', opacity: 0.7 },
 
   statsRow: { flexDirection: 'row', gap: Spacing.two, marginTop: Spacing.four },
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     flex: 1, alignItems: 'center', paddingVertical: Spacing.three,
     borderRadius: Spacing.three,
   },
-  statNum: { fontSize: 20, fontWeight: '700' },
+  statNum: { fontSize: 20, fontWeight: '700', lineHeight: 26 },
 
   resultsList: { marginTop: Spacing.four, gap: Spacing.two },
   resultsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },

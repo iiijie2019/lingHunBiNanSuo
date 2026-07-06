@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
   },
   moodEmoji: {
     fontSize: 28,
+    lineHeight: 36,
   },
   moodRowContent: {
     flex: 1,

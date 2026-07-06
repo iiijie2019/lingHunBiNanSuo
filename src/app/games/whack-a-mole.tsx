@@ -152,7 +152,7 @@ export default function WhackAMoleScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <Pressable style={styles.backRow} onPress={() => router.back()}>
+        <Pressable style={styles.backRow} onPress={() => router.dismiss()}>
           <FontAwesome name="angle-left" size={20} color="#FF6B6B" />
           <ThemedText type="default" style={styles.backLabel}>返回</ThemedText>
         </Pressable>
@@ -303,8 +303,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
   },
   scoreBadge: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
-  scoreBadgeText: { fontSize: 20, fontWeight: '800' },
-  comboText: { fontSize: 16, fontWeight: '700', color: '#FF9500' },
+  scoreBadgeText: { fontSize: 20, fontWeight: '800', lineHeight: 26 },
+  comboText: { fontSize: 16, fontWeight: '700', color: '#FF9500', lineHeight: 22 },
 
   // Progress
   progressSection: { gap: Spacing.one, marginTop: Spacing.two },
@@ -315,16 +315,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: Spacing.three,
   },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 2 },
-  legendEmoji: { fontSize: 14 },
+  legendEmoji: { fontSize: 14, lineHeight: 20 },
 
   // Start / End
   startCard: {
     marginTop: Spacing.six, padding: Spacing.six,
     borderRadius: Spacing.three, alignItems: 'center', gap: Spacing.three,
   },
-  startEmoji: { fontSize: 72 },
+  startEmoji: { fontSize: 72, lineHeight: 84 },
   startDesc: { textAlign: 'center' },
-  endScore: { fontSize: 40, fontWeight: '800', color: '#208AEF' },
+  endScore: { fontSize: 40, fontWeight: '800', color: '#208AEF', lineHeight: 48 },
 
   // Result stats
   resultStats: {
@@ -332,8 +332,8 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.two, gap: Spacing.two,
   },
   resultItem: { alignItems: 'center', gap: 2, flex: 1 },
-  resultEmoji: { fontSize: 28 },
-  resultNum: { fontSize: 24, fontWeight: '800' },
+  resultEmoji: { fontSize: 28, lineHeight: 36 },
+  resultNum: { fontSize: 24, fontWeight: '800', lineHeight: 30 },
   resultDivider: { width: 1, height: 40, backgroundColor: '#E0E0E0' },
 
   startBtn: {
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF6B6B', paddingVertical: Spacing.three,
     paddingHorizontal: Spacing.five, borderRadius: Spacing.three, gap: Spacing.two,
   },
-  startBtnText: { color: '#FFFFFF', fontSize: 18, fontWeight: '700' },
+  startBtnText: { color: '#FFFFFF', fontSize: 18, fontWeight: '700', lineHeight: 24 },
 
   // Grid
   grid: {
@@ -375,5 +375,5 @@ const styles = StyleSheet.create({
     position: 'absolute', bottom: 4,
   },
   mole: { position: 'absolute', bottom: 0, alignItems: 'center' },
-  moleEmoji: { fontSize: 44 },
+  moleEmoji: { fontSize: 44, lineHeight: 52 },
 });

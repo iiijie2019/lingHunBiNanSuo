@@ -44,7 +44,7 @@ export default function ColorWordScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <Pressable style={styles.backRow} onPress={() => router.back()}>
+        <Pressable style={styles.backRow} onPress={() => router.dismiss()}>
           <FontAwesome name="angle-left" size={20} color="#AF52DE" />
           <ThemedText type="default" style={styles.backLabel}>返回</ThemedText>
         </Pressable>
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.six, borderRadius: Spacing.three,
     alignItems: 'center', gap: Spacing.two,
   },
-  colorWord: { fontSize: 56, fontWeight: '900' },
+  colorWord: { fontSize: 56, fontWeight: '900', lineHeight: 64 },
 
   optionsGrid: {
     flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two,
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     flex: 1, alignItems: 'center', paddingVertical: Spacing.three,
     borderRadius: Spacing.three,
   },
-  scoreNum: { fontSize: 22, fontWeight: '700' },
+  scoreNum: { fontSize: 22, fontWeight: '700', lineHeight: 28 },
 
   feedback: { textAlign: 'center', marginTop: Spacing.three, fontSize: 18, fontWeight: '600' },
   feedbackCorrect: { color: '#34C759' },

@@ -101,9 +101,9 @@ const styles = StyleSheet.create({
 
   grid: { gap: Spacing.three },
   gameCardWrapper: { flex: 1 },
-  gameCard: { padding: Spacing.four, borderRadius: Spacing.three, gap: Spacing.two },
+  gameCard: { padding: 10, borderRadius: 10, gap: Spacing.two },
   cardTop: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start',
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start',padding: 10,borderRadius: 10,
   },
   iconBox: {
     width: 56, height: 56, borderRadius: 16,

@@ -32,7 +32,7 @@ export default function CoinFlipScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <Pressable style={styles.backRow} onPress={() => router.back()}>
+        <Pressable style={styles.backRow} onPress={() => router.dismiss()}>
           <FontAwesome name="angle-left" size={20} color="#FF9500" />
           <ThemedText type="default" style={styles.backLabel}>返回</ThemedText>
         </Pressable>
@@ -108,9 +108,9 @@ const styles = StyleSheet.create({
   card: { padding: Spacing.four, borderRadius: Spacing.three, gap: Spacing.four, alignItems: 'center' },
 
   coinArea: { alignItems: 'center', gap: Spacing.three, paddingVertical: Spacing.four },
-  coin: { fontSize: 80 },
+  coin: { fontSize: 80, lineHeight: 92 },
   coinFlipping: { opacity: 0.25 },
-  resultLabel: { fontSize: 22, fontWeight: '700', color: '#FF9500' },
+  resultLabel: { fontSize: 22, fontWeight: '700', color: '#FF9500', lineHeight: 28 },
 
   btn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     flex: 1, alignItems: 'center', paddingVertical: Spacing.two,
     borderRadius: Spacing.two,
   },
-  statNum: { fontSize: 20, fontWeight: '700' },
+  statNum: { fontSize: 20, fontWeight: '700', lineHeight: 26 },
 
   historyRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, justifyContent: 'center' },
   historyDot: { width: 10, height: 10, borderRadius: 5 },

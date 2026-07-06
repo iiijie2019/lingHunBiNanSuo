@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     padding: Spacing.four, borderRadius: Spacing.four,
     alignItems: 'center', gap: Spacing.two, marginBottom: Spacing.four,
   },
-  todayMoodEmoji: { fontSize: 64 },
+  todayMoodEmoji: { fontSize: 64, lineHeight: 76 },
   todayNote: { fontStyle: 'italic', opacity: 0.7, textAlign: 'center' },
   recordButton: {
     backgroundColor: '#208AEF', paddingHorizontal: Spacing.six,
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     borderWidth: 2, borderColor: 'transparent',
   },
   moodSelected: { borderColor: '#208AEF', backgroundColor: '#208AEF15' },
-  moodOptionEmoji: { fontSize: 28 },
+  moodOptionEmoji: { fontSize: 28, lineHeight: 36 },
   inputWrapper: {
     borderRadius: Spacing.three, paddingHorizontal: Spacing.three, paddingVertical: Spacing.two,
   },
