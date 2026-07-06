@@ -1,6 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, TextInput, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -337,33 +337,35 @@ function RuleItem({ icon, text }: { icon: string; text: string }) {
 }
 
 const styles = StyleSheet.create({
+  // ===== Layout =====
   container: { flex: 1, flexDirection: 'row', justifyContent: 'center' },
   safeArea: { flex: 1, maxWidth: 500, paddingHorizontal: Spacing.four },
   scroll: { paddingBottom: Spacing.six },
 
-  // Header
+  // ===== Header =====
   header: { gap: Spacing.three, paddingBottom: Spacing.three },
   backRow: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.one,
-    paddingVertical: Spacing.one, alignSelf: 'flex-start',
+    paddingVertical: Spacing.two, alignSelf: 'flex-start',
   },
   backBtn: {
-    width: 32, height: 32, borderRadius: 10,
+    width: 36, height: 36, borderRadius: 12,
     backgroundColor: '#208AEF12', alignItems: 'center', justifyContent: 'center',
   },
   backLabel: { color: '#208AEF' },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
   titleIcon: {
-    width: 52, height: 52, borderRadius: 16,
+    width: 56, height: 56, borderRadius: 16,
     backgroundColor: '#208AEF12', alignItems: 'center', justifyContent: 'center',
   },
   titleIconText: { fontSize: 28, lineHeight: 36 },
   titleInfo: { gap: 2 },
 
-  // Rules
+  // ===== Rules Toggle =====
   rulesToggle: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingVertical: Spacing.two, paddingHorizontal: Spacing.two,
+    paddingVertical: Spacing.two, paddingHorizontal: Spacing.three,
+    borderRadius: Spacing.three,
   },
   rulesToggleInner: { flexDirection: 'row', alignItems: 'center', gap: Spacing.one },
   rulesToggleText: { color: '#208AEF' },
@@ -373,41 +375,45 @@ const styles = StyleSheet.create({
   },
   ruleItem: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.two },
   ruleIcon: {
-    width: 22, height: 22, borderRadius: 11,
+    width: 24, height: 24, borderRadius: 12,
     backgroundColor: '#208AEF12', alignItems: 'center', justifyContent: 'center',
   },
   ruleIconText: { color: '#208AEF', fontSize: 12 },
   ruleText: { flex: 1, lineHeight: 20 },
-  ruleDivider: { height: StyleSheet.hairlineWidth, backgroundColor: '#E5E5EA', marginLeft: 34 },
+  ruleDivider: { height: StyleSheet.hairlineWidth, backgroundColor: '#E5E5EA', marginLeft: 36 },
 
-  // Game Card
+  // ===== Game Card =====
   gameCard: {
     padding: Spacing.five, borderRadius: Spacing.four,
     gap: Spacing.four, alignItems: 'center',
   },
 
-  // Range
+  // ===== Range =====
   rangeRow: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.two, width: '100%',
   },
   rangeBadge: {
-    width: 40, height: 40, borderRadius: 12,
+    width: 44, height: 44, borderRadius: 14,
     backgroundColor: '#208AEF12', alignItems: 'center', justifyContent: 'center',
   },
-  rangeText: { color: '#208AEF', fontSize: 15 },
-  rangeLineContainer: { flex: 1, alignItems: 'center', gap: Spacing.one },
+  rangeText: { color: '#208AEF', fontSize: 15, fontWeight: '600' },
+  rangeLineContainer: {
+    flex: 1, alignItems: 'center', gap: Spacing.one,
+    paddingVertical: Spacing.one, paddingHorizontal: Spacing.two, borderRadius: Spacing.two,
+  },
   rangeLine: {
     width: '100%', height: 3, backgroundColor: '#208AEF18',
     borderRadius: 2,
   },
   rangeHint: { fontSize: 12 },
 
-  // Input
-  inputRow: { flexDirection: 'row', gap: Spacing.two, width: '100%' },
+  // ===== Input =====
+  inputRow: { flexDirection: 'row', gap: Spacing.two, width: '100%',borderRadius: 20 },
   inputWrapper: {
     flex: 1, borderRadius: Spacing.three,
-    paddingHorizontal: Spacing.three, paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.three, paddingVertical: Spacing.three,
     borderWidth: 2, borderColor: '#208AEF30',
+    padding: 5
   },
   input: {
     fontSize: 32, fontWeight: '700', textAlign: 'center',
@@ -416,37 +422,47 @@ const styles = StyleSheet.create({
   guessBtn: {
     backgroundColor: '#208AEF', paddingHorizontal: 28,
     borderRadius: Spacing.three, alignItems: 'center', justifyContent: 'center',
-    minWidth: 80,
+    minWidth: 84,
   },
   guessBtnPressed: { opacity: 0.8, transform: [{ scale: 0.97 }] },
   guessBtnText: { color: '#FFFFFF', fontSize: 18, fontWeight: '700' },
 
-  // Message
+  // ===== Message =====
   messageBox: {
     paddingVertical: Spacing.two, paddingHorizontal: Spacing.four,
-    borderRadius: 20, width: '100%', alignItems: 'center',
+    borderRadius: Spacing.three, width: '100%', alignItems: 'center',
   },
   messageText: { fontSize: 16, fontWeight: '600', lineHeight: 22 },
 
-  // Stats
+  // ===== Stats =====
   statsRow: {
-    flexDirection: 'row', gap: Spacing.five,
-    paddingTop: Spacing.one,
+    flexDirection: 'row', gap: Spacing.four,
+    padding: 5,
+    borderRadius: 10
   },
-  statItem: { flexDirection: 'row', alignItems: 'center', gap: Spacing.one },
+  statItem: {
+    flexDirection: 'row', alignItems: 'center', gap: Spacing.one,
+    paddingVertical: Spacing.one, paddingHorizontal: Spacing.two,
+    borderRadius: Spacing.two,
+
+  },
   statIcon: { fontSize: 14 },
 
-  // Win
-  winBox: { alignItems: 'center', gap: Spacing.three, paddingVertical: Spacing.two },
+  // ===== Win =====
+  winBox: {
+    alignItems: 'center', gap: Spacing.three,
+    paddingVertical: Spacing.two, paddingHorizontal: Spacing.three,
+  },
   winEmojiWrap: {
-    width: 80, height: 80, borderRadius: 40,
+    width: 84, height: 84, borderRadius: 42,
     backgroundColor: '#34C75912', alignItems: 'center', justifyContent: 'center',
   },
   winEmoji: { fontSize: 48, lineHeight: 56 },
   winTitle: { fontSize: 24, fontWeight: '700', color: '#34C759' },
   winStats: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.five,
-    paddingVertical: Spacing.three,
+    paddingVertical: Spacing.three, paddingHorizontal: Spacing.four,
+    borderRadius: Spacing.three,
   },
   winStatItem: { alignItems: 'center', gap: 4 },
   winStatValue: { color: '#208AEF' },
@@ -454,22 +470,26 @@ const styles = StyleSheet.create({
   resetBtn: {
     flexDirection: 'row', alignItems: 'center',
     backgroundColor: '#208AEF', paddingVertical: Spacing.three,
-    paddingHorizontal: Spacing.six, borderRadius: 25, gap: Spacing.two,
+    paddingHorizontal: Spacing.six, borderRadius: Spacing.four, gap: Spacing.two,
     marginTop: Spacing.one,
   },
   resetBtnText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
 
-  // History
+  // ===== History =====
   historySection: { marginTop: Spacing.four, gap: Spacing.three },
   historyHeader: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.one,
+    paddingHorizontal: Spacing.one,
   },
   bestScore: { color: '#34C759', marginLeft: 'auto' },
-  historyRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.one },
+  historyRow: {
+    flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two,
+    padding: Spacing.two,
+  },
   historyItem: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.one,
-    paddingHorizontal: Spacing.two, paddingVertical: Spacing.one,
-    borderRadius: 10,
+    paddingHorizontal: Spacing.three, paddingVertical: Spacing.two,
+    borderRadius: Spacing.two,
   },
   historyStep: { opacity: 0.4, marginRight: 2, fontSize: 11 },
   historyStepWin: { opacity: 0.7, color: '#FFFFFF' },

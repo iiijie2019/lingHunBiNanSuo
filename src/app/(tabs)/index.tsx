@@ -103,8 +103,9 @@ export default function HomeScreen() {
           <ThemedView style={styles.quickLinks}>
             <QuickLink href="/habits" icon="check-circle" color="#34C759" label="习惯打卡" />
             <QuickLink href="/mood" icon="smile-o" color="#FF6B6B" label="心情日记" />
+            <QuickLink href="/diary" icon="book" color="#AF52DE" label="日记" />
             <QuickLink href="/utilities" icon="wrench" color="#FF9500" label="实用工具" />
-            <QuickLink href="/profile" icon="user" color="#AF52DE" label="个人中心" />
+            <QuickLink href="/profile" icon="user" color="#208AEF" label="个人中心" />
           </ThemedView>
 
           {/* 最近心情 */}

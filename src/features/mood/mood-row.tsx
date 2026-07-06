@@ -88,6 +88,8 @@ const styles = StyleSheet.create({
   moodRowContent: {
     flex: 1,
     gap: Spacing.one,
+    padding:5,
+    borderRadius:5
   },
   moodRowHeader: {
     flexDirection: 'row',

@@ -24,6 +24,20 @@ export interface MoodEntry {
   note: string;
 }
 
+export interface DiaryEntry {
+  id: string;
+  /** ISO date string */
+  date: string;
+  /** ISO datetime string */
+  createdAt: string;
+  title: string;
+  content: string;
+  /** optional mood emoji to link with mood */
+  moodEmoji?: string;
+  /** optional tags */
+  tags: string[];
+}
+
 /** Summary stats persisted per game */
 export interface GameRecord {
   /** best / high score (meaning depends on game) */
@@ -49,6 +63,7 @@ export interface GameRecords {
 export interface AppState {
   habits: Habit[];
   moods: MoodEntry[];
+  diary: DiaryEntry[];
   gameRecords: GameRecords;
 }
 
@@ -95,6 +110,10 @@ type Action =
   // Moods
   | { type: 'ADD_MOOD'; mood: string; note: string }
   | { type: 'DELETE_MOOD'; id: string }
+  // Diary
+  | { type: 'ADD_DIARY'; title: string; content: string; moodEmoji?: string; tags?: string[] }
+  | { type: 'UPDATE_DIARY'; id: string; title: string; content: string; moodEmoji?: string; tags?: string[] }
+  | { type: 'DELETE_DIARY'; id: string }
   // Game records
   | { type: 'SAVE_GAME_RECORD'; game: keyof GameRecords; score: number; extra1?: number; extra2?: number }
   // Hydration from storage
@@ -139,6 +158,46 @@ function reducer(state: AppState, action: Action): AppState {
         }),
       };
     }
+
+    // ---- Diary ----
+    case 'ADD_DIARY':
+      return {
+        ...state,
+        diary: [
+          {
+            id: genId(),
+            date: today(),
+            createdAt: new Date().toISOString(),
+            title: action.title,
+            content: action.content,
+            moodEmoji: action.moodEmoji,
+            tags: action.tags ?? [],
+          },
+          ...state.diary,
+        ],
+      };
+
+    case 'UPDATE_DIARY':
+      return {
+        ...state,
+        diary: state.diary.map((d) =>
+          d.id === action.id
+            ? {
+                ...d,
+                title: action.title,
+                content: action.content,
+                moodEmoji: action.moodEmoji,
+                tags: action.tags ?? d.tags,
+              }
+            : d,
+        ),
+      };
+
+    case 'DELETE_DIARY':
+      return {
+        ...state,
+        diary: state.diary.filter((d) => d.id !== action.id),
+      };
 
     // ---- Moods ----
     case 'ADD_MOOD':
@@ -196,7 +255,8 @@ function reducer(state: AppState, action: Action): AppState {
     case 'HYDRATE':
       return {
         ...action.state,
-        // Ensure gameRecords exist for migrations from older stored state
+        // Ensure gameRecords and diary exist for migrations from older stored state
+        diary: action.state.diary ?? [],
         gameRecords: {
           ...defaultGameRecords(),
           ...action.state.gameRecords,
@@ -215,6 +275,7 @@ function reducer(state: AppState, action: Action): AppState {
 const initialState: AppState = {
   habits: [],
   moods: [],
+  diary: [],
   gameRecords: defaultGameRecords(),
 };
 

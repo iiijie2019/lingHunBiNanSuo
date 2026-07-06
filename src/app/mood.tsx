@@ -2,7 +2,9 @@ import { FontAwesome } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
   FlatList,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   StyleSheet,
   TextInput,
@@ -102,7 +104,11 @@ export default function MoodScreen() {
           presentationStyle="pageSheet"
           transparent
         >
-          <ThemedView style={styles.modalOverlay}>
+          <KeyboardAvoidingView
+            style={styles.modalOverlay}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'android' ? 0 : 0}
+          >
             <ThemedView style={styles.modalContent}>
               <ThemedText type="subtitle" style={styles.modalTitle}>
                 记录心情
@@ -154,7 +160,7 @@ export default function MoodScreen() {
                 </Pressable>
               </ThemedView>
             </ThemedView>
-          </ThemedView>
+          </KeyboardAvoidingView>
         </Modal>
       </SafeAreaView>
     </ThemedView>
