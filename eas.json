@@ -1,0 +1,43 @@
+{
+  "cli": {
+    "version": ">= 19.0.8",
+    "appVersionSource": "local"
+  },
+  "build": {
+    "production": {
+      "env": {
+        "APP_NAME": "灵魂避难所"
+      },
+      "android": {
+        "buildType": "apk",
+        "distribution": "internal"
+      },
+      "channel": "production"
+    },
+    "preview": {
+      "android": {
+        "buildType": "app-bundle",
+        "distribution": "internal"
+      },
+      "channel": "preview"
+    },
+    "development": {
+      "env": {
+        "APP_NAME": "灵魂避难所-dev",
+        "DEV_FEATURES": "true"
+      },
+      "developmentClient": true,
+      "ios": {
+        "distribution": "internal"
+      },
+      "android": {
+        "buildType": "apk",
+        "distribution": "internal"
+      },
+      "channel": "development"
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
