@@ -1,6 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons';
-import { router } from 'expo-router';
 import * as FileSystem from 'expo-file-system/legacy';
+import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import React, { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
@@ -81,6 +81,7 @@ export default function DataScreen() {
               guessNumber: { best: 999, games: 0, extra1: 0, extra2: 0, lastPlayed: null },
               whackAMole: { best: 0, games: 0, extra1: 0, extra2: 0, lastPlayed: null },
               reaction: { best: 9999, games: 0, extra1: 0, extra2: 0, lastPlayed: null },
+              memoryCard: { best: 0, games: 0, extra1: 0, extra2: 0, lastPlayed: null },
               colorWord: { best: 0, games: 0, extra1: 0, extra2: 0, lastPlayed: null },
               mathChallenge: { best: 0, games: 0, extra1: 0, extra2: 0, lastPlayed: null },
             },

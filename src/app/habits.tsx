@@ -3,7 +3,9 @@ import React, { useState } from 'react';
 import {
   Alert,
   FlatList,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -106,45 +108,51 @@ export default function HabitsScreen() {
           presentationStyle="pageSheet"
           transparent
         >
-          <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)} />
-          <ThemedView style={[styles.modalContent, isDark && styles.modalContentDark]}>
-            <ThemedView style={styles.modalHandle} />
-            <ThemedText type="subtitle" style={styles.modalTitle}>新建习惯</ThemedText>
+          <KeyboardAvoidingView
+            style={styles.keyboardView}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'android' ? -40 : 0}
+          >
+            <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)} />
+            <ThemedView style={[styles.modalContent, isDark && styles.modalContentDark]}>
+              <ThemedView style={styles.modalHandle} />
+              <ThemedText type="subtitle" style={styles.modalTitle}>新建习惯</ThemedText>
 
-            <ThemedText type="smallBold" themeColor="textSecondary">选择图标</ThemedText>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.emojiRow}>
-              {EMOJI_OPTIONS.map((emoji) => (
-                <Pressable
-                  key={emoji}
-                  style={[styles.emojiOption, newEmoji === emoji && styles.emojiSelected]}
-                  onPress={() => setNewEmoji(emoji)}
-                >
-                  <ThemedText style={styles.emojiText}>{emoji}</ThemedText>
+              <ThemedText type="smallBold" themeColor="textSecondary">选择图标</ThemedText>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.emojiRow}>
+                {EMOJI_OPTIONS.map((emoji) => (
+                  <Pressable
+                    key={emoji}
+                    style={[styles.emojiOption, newEmoji === emoji && styles.emojiSelected]}
+                    onPress={() => setNewEmoji(emoji)}
+                  >
+                    <ThemedText style={styles.emojiText}>{emoji}</ThemedText>
+                  </Pressable>
+                ))}
+              </ScrollView>
+
+              <ThemedText type="smallBold" themeColor="textSecondary">习惯名称</ThemedText>
+              <ThemedView type="backgroundElement" style={styles.inputWrapper}>
+                <TextInput
+                  style={[styles.input, { color: isDark ? '#FFFFFF' : '#000000' }]}
+                  placeholder="例如：每天阅读30分钟"
+                  placeholderTextColor="#999"
+                  value={newName}
+                  onChangeText={setNewName}
+                  autoFocus
+                />
+              </ThemedView>
+
+              <ThemedView style={styles.modalButtons}>
+                <Pressable style={styles.cancelButton} onPress={() => setModalVisible(false)}>
+                  <ThemedText type="default">取消</ThemedText>
                 </Pressable>
-              ))}
-            </ScrollView>
-
-            <ThemedText type="smallBold" themeColor="textSecondary">习惯名称</ThemedText>
-            <ThemedView type="backgroundElement" style={styles.inputWrapper}>
-              <TextInput
-                style={[styles.input, { color: isDark ? '#FFFFFF' : '#000000' }]}
-                placeholder="例如：每天阅读30分钟"
-                placeholderTextColor="#999"
-                value={newName}
-                onChangeText={setNewName}
-                autoFocus
-              />
+                <Pressable style={styles.confirmButton} onPress={addHabit}>
+                  <ThemedText style={styles.confirmButtonText}>创建</ThemedText>
+                </Pressable>
+              </ThemedView>
             </ThemedView>
-
-            <ThemedView style={styles.modalButtons}>
-              <Pressable style={styles.cancelButton} onPress={() => setModalVisible(false)}>
-                <ThemedText type="default">取消</ThemedText>
-              </Pressable>
-              <Pressable style={styles.confirmButton} onPress={addHabit}>
-                <ThemedText style={styles.confirmButtonText}>创建</ThemedText>
-              </Pressable>
-            </ThemedView>
-          </ThemedView>
+          </KeyboardAvoidingView>
         </Modal>
       </SafeAreaView>
     </ThemedView>
@@ -184,10 +192,12 @@ const styles = StyleSheet.create({
     borderRadius: Spacing.three, gap: Spacing.two, marginTop: Spacing.two,
     shadowColor: '#208AEF', shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25, shadowRadius: 8, elevation: 4,
+    marginBottom: 50
   },
   addButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
 
   // Modal
+  keyboardView: { flex: 1 },
   modalOverlay: {
     flex: 1, backgroundColor: 'rgba(0,0,0,0.4)',
   },

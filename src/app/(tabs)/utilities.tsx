@@ -13,10 +13,10 @@ const TOOLS = [
   { route: '/utilities/random-number' as const, icon: 'random' as const, color: '#208AEF', title: '随机数生成器', desc: '在指定范围内生成随机整数' },
   { route: '/utilities/dice-roll' as const, icon: 'cube' as const, color: '#AF52DE', title: '掷骰子', desc: '1-4 颗骰子，显示结果与合计' },
   { route: '/utilities/coin-flip' as const, icon: 'dot-circle-o' as const, color: '#FF9500', title: '抛硬币', desc: '二选一决定，含正反统计' },
+  { route: '/utilities/decision-wheel' as const, icon: 'circle-o-notch' as const, color: '#FF9500', title: '决策转盘', desc: '输入选项，让命运帮你决定' },
   { route: '/utilities/random-color' as const, icon: 'paint-brush' as const, color: '#34C759', title: '随机颜色', desc: '生成 HEX 颜色与 RGB 值' },
-
-
-  
+  { route: '/utilities/unit-convert' as const, icon: 'exchange' as const, color: '#208AEF', title: '单位换算', desc: '长度、重量、温度等常用单位换算' },
+  { route: '/utilities/qr-generator' as const, icon: 'qrcode' as const, color: '#000', title: '二维码生成', desc: '输入文字或链接生成二维码' },
 ];
 
 export default function UtilitiesScreen() {

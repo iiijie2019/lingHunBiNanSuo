@@ -56,6 +56,7 @@ export interface GameRecords {
   guessNumber: GameRecord;   // best = fewest attempts to win
   whackAMole: GameRecord;    // best = highest score
   reaction: GameRecord;      // best = fastest reaction (ms)
+  memoryCard: GameRecord;    // best = highest score (points per move)
   colorWord: GameRecord;     // best = highest correct count; extra1 = best accuracy %
   mathChallenge: GameRecord; // best = highest correct count; extra1 = best accuracy %
 }
@@ -80,6 +81,7 @@ function defaultGameRecords(): GameRecords {
     guessNumber: { ...defaultGameRecord(), best: 999 },
     whackAMole: defaultGameRecord(),
     reaction: { ...defaultGameRecord(), best: 9999 },
+    memoryCard: defaultGameRecord(),
     colorWord: defaultGameRecord(),
     mathChallenge: defaultGameRecord(),
   };

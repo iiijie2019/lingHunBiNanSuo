@@ -7,7 +7,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
-import { useStore, type GameRecord } from '@/stores/useStore';
+import { useStore } from '@/stores/useStore';
+
+interface GameRecord { best: number; games: number; extra1: number; extra2: number; lastPlayed: string | null; }
 
 const GAMES = [
   {
@@ -16,7 +18,7 @@ const GAMES = [
     icon: 'question-circle' as const,
     color: '#208AEF',
     title: '猜数字',
-    desc: '1-100 之间猜一个随机数字，看几次能猜中',
+    desc: '1-100 之间猜一个随机数字',
     badge: '推理',
     bestLabel: (r: GameRecord) => r.games > 0 ? `最佳 ${r.best} 次` : '',
   },
@@ -26,7 +28,7 @@ const GAMES = [
     icon: 'paw' as const,
     color: '#FF6B6B',
     title: '打地鼠',
-    desc: '地鼠冒出来时快速点击，combo 越多分越高',
+    desc: '地鼠冒出时快速点击得分',
     badge: '手速',
     bestLabel: (r: GameRecord) => r.games > 0 ? `最高 ${r.best} 分` : '',
   },
@@ -36,9 +38,39 @@ const GAMES = [
     icon: 'bolt' as const,
     color: '#FF9500',
     title: '反应速度',
-    desc: '屏幕变绿时立刻点击，测试你的反应时间',
+    desc: '屏幕变绿时立刻点击测试反应',
     badge: '敏捷',
     bestLabel: (r: GameRecord) => r.best < 9999 ? `最快 ${r.best}ms` : '',
+  },
+  {
+    route: '/games/memory-card' as const,
+    gameKey: 'memoryCard' as const,
+    icon: 'clone' as const,
+    color: '#34C759',
+    title: '记忆翻牌',
+    desc: '翻开两张牌，找到相同图案',
+    badge: '记忆',
+    bestLabel: (r: GameRecord) => r.games > 0 ? `最高 ${r.best} 分` : '',
+  },
+  {
+    route: '/games/gomoku' as const,
+    gameKey: 'gomoku' as const,
+    icon: 'circle-thin' as const,
+    color: '#FF9500',
+    title: '五子棋',
+    desc: '经典五子棋，对战简单 AI',
+    badge: '棋类',
+    bestLabel: () => '',
+  },
+  {
+    route: '/games/idiom-chain' as const,
+    gameKey: 'idiomChain' as const,
+    icon: 'font' as const,
+    color: '#AF52DE',
+    title: '成语接龙',
+    desc: '尾字接龙，和AI一决高下',
+    badge: '文字',
+    bestLabel: () => '',
   },
   {
     route: '/games/color-word' as const,
@@ -46,7 +78,7 @@ const GAMES = [
     icon: 'eye' as const,
     color: '#AF52DE',
     title: '颜色判断',
-    desc: '说出字的颜色而非字的意思，经典 Stroop 测试',
+    desc: '字的颜色和意思，你能分清吗',
     badge: '专注',
     bestLabel: (r: GameRecord) => r.games > 0 ? `最高 ${r.best} 题` : '',
   },
@@ -56,9 +88,19 @@ const GAMES = [
     icon: 'calculator' as const,
     color: '#FF6B6B',
     title: '数学速算',
-    desc: '限时回答加减乘除，看看能得多少分',
+    desc: '限时回答加减乘除得高分',
     badge: '脑力',
     bestLabel: (r: GameRecord) => r.games > 0 ? `最高 ${r.best} 题` : '',
+  },
+  {
+    route: '/games/maze' as const,
+    gameKey: 'maze' as const,
+    icon: 'map' as const,
+    color: '#34C759',
+    title: '走迷宫',
+    desc: '随机生成迷宫，找出口',
+    badge: '解谜',
+    bestLabel: () => '',
   },
 ];
 
@@ -78,8 +120,8 @@ export default function GamesScreen() {
 
           <ThemedView style={styles.grid}>
             {GAMES.map((game) => {
-              const record = gameRecords[game.gameKey];
-              const bestText = game.bestLabel(record);
+              const record = (gameRecords as any)[game.gameKey] as GameRecord | undefined;
+              const bestText = game.bestLabel(record ?? { best: 0, games: 0, extra1: 0, extra2: 0, lastPlayed: null });
 
               return (
                 <Link key={game.route} href={game.route as Href} asChild>
