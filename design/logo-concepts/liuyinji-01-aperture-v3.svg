@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">流银纪 Logo 方案一：宇宙沙漏 V3</title>
+  <desc id="desc">圆角银色时间沙漏与具有方向变化的流转轨道</desc>
+  <rect width="1024" height="1024" rx="224" fill="#050A14"/>
+  <defs>
+    <g id="hourglass-half" fill="none" stroke="#DCE5EC" stroke-width="52" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M340 280H684"/>
+      <path d="M350 294C382 360 424 410 478 458C497 475 527 475 546 458C600 410 642 360 674 294"/>
+    </g>
+    <path id="orbit-flow" d="M289 289C226 342 197 462 227 578Q232 598 247 582C224 486 255 386 329 329Q313 296 289 289Z"/>
+  </defs>
+  <circle cx="512" cy="512" r="368" fill="none" stroke="#183043" stroke-width="18"/>
+  <g>
+    <use href="#hourglass-half"/>
+    <use href="#hourglass-half" transform="rotate(180 512 512)"/>
+  </g>
+  <rect x="456" y="456" width="112" height="112" rx="30" fill="#0A1621" stroke="#DCE5EC" stroke-width="20" transform="rotate(45 512 512)"/>
+  <circle cx="512" cy="512" r="21" fill="#DCE5EC"/>
+  <g fill="#71899B">
+    <use href="#orbit-flow"/>
+    <use href="#orbit-flow" transform="rotate(180 512 512)"/>
+  </g>
+</svg>

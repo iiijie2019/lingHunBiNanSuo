@@ -8,8 +8,10 @@ import QRCode from 'react-native-qrcode-svg';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export default function QRGeneratorScreen() {
+  const theme = useTheme();
   const [text, setText] = useState('');
   const [qrValue, setQrValue] = useState('');
 
@@ -20,7 +22,7 @@ export default function QRGeneratorScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView cosmic style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
           <Pressable style={styles.backRow} onPress={() => router.dismiss()}>
@@ -33,7 +35,7 @@ export default function QRGeneratorScreen() {
 
           <ThemedView type="backgroundElement" style={styles.inputCard}>
             <TextInput
-              style={styles.textInput}
+              style={[styles.textInput, { color: theme.text, borderColor: theme.backgroundSelected }]}
               placeholder="输入文字或网址..."
               placeholderTextColor="#999"
               value={text}
@@ -75,7 +77,7 @@ const styles = StyleSheet.create({
   backBtn: { width: 36, height: 36, borderRadius: 12, backgroundColor: '#00000008', alignItems: 'center', justifyContent: 'center' },
 
   inputCard: { padding: Spacing.four, borderRadius: Spacing.three, gap: Spacing.three },
-  textInput: { fontSize: 16, minHeight: 70, padding: Spacing.two, borderRadius: Spacing.two, borderWidth: 1, borderColor: '#C0C0C0', color: '#000' },
+  textInput: { fontSize: 16, minHeight: 70, padding: Spacing.two, borderRadius: Spacing.two, borderWidth: 1 },
   genBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#000', paddingVertical: Spacing.three, borderRadius: Spacing.three, gap: Spacing.two },
 
   qrCard: { padding: Spacing.five, borderRadius: Spacing.three, alignItems: 'center' },

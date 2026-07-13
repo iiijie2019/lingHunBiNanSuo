@@ -94,7 +94,7 @@ export default function IdiomChainScreen() {
   }, [input, chain]);
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView cosmic style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
           <Pressable style={styles.backRow} onPress={() => router.dismiss()}>

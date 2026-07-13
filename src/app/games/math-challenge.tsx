@@ -1,7 +1,7 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, useColorScheme } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
@@ -32,7 +32,6 @@ function genOptions(correct: number): number[] {
 }
 
 export default function MathChallengeScreen() {
-  const isDark = useColorScheme() === 'dark';
   const dispatch = useDispatch();
   const { gameRecords } = useStore();
   const bestRecord = gameRecords.mathChallenge;
@@ -85,7 +84,7 @@ export default function MathChallengeScreen() {
   }, [gameOver, score, total, dispatch]);
 
   const answer = (v: number) => {
-    if (gameOver || !question) return;
+    if (gameOver || !question || feedback) return;
     const correct = v === question.answer;
     setFeedback(correct ? 'correct' : 'wrong');
     if (correct) setScore((s) => s + 1);
@@ -97,7 +96,7 @@ export default function MathChallengeScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView cosmic style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <Pressable style={styles.backRow} onPress={() => router.dismiss()}>
           <FontAwesome name="angle-left" size={20} color="#FF6B6B" />
@@ -164,6 +163,7 @@ export default function MathChallengeScreen() {
                     pressed && styles.optionPressed,
                   ]}
                   onPress={() => answer(v)}
+                  disabled={feedback !== null}
                 >
                   <ThemedText style={styles.optionText}>{v}</ThemedText>
                 </Pressable>

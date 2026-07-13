@@ -24,7 +24,7 @@ export default function RandomColorScreen() {
   const isLight = (r * 299 + g * 587 + b * 114) / 1000 > 150;
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView cosmic style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <Pressable style={styles.backRow} onPress={() => router.dismiss()}>
           <FontAwesome name="angle-left" size={20} color="#34C759" />

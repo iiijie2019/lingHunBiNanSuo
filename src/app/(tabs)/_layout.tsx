@@ -1,15 +1,15 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { useColorScheme } from 'react-native';
+import { StyleSheet, useColorScheme, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { BrandColors, Colors } from '@/constants/theme';
 
 const TABS = [
-  { name: 'index', title: '首页', icon: 'home' },
-  { name: 'games', title: '游戏', icon: 'gamepad' },
-  { name: 'utilities', title: '工具', icon: 'wrench' },
-  { name: 'profile', title: '我的', icon: 'user' },
+  { name: 'index', title: '航程', icon: 'home' },
+  { name: 'games', title: '挑战', icon: 'gamepad' },
+  { name: 'utilities', title: '装备', icon: 'wrench' },
+  { name: 'profile', title: '星图', icon: 'rocket' },
 ] as const;
 
 export default function TabLayout() {
@@ -20,14 +20,23 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: colors.text,
+        tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
           backgroundColor: colors.background,
-          borderTopColor: colors.backgroundElement,
-          height: 66
+          borderTopColor: colors.backgroundSelected,
+          paddingTop: 7,
+          height: 72,
+          shadowColor: BrandColors.deepSpace,
+          shadowOffset: { width: 0, height: -5 },
+          shadowOpacity: 0.12,
+          shadowRadius: 14,
+          elevation: 12,
         },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '700', letterSpacing: 0.5 },
+        tabBarHideOnKeyboard: true,
         headerShown: false,
+        freezeOnBlur: true,
       }}
     >
       {TABS.map(({ name, title, icon }) => (
@@ -36,8 +45,10 @@ export default function TabLayout() {
           name={name}
           options={{
             title,
-            tabBarIcon: ({ color, size }) => (
-              <FontAwesome name={icon} size={size} color={color} />
+            tabBarIcon: ({ color, size, focused }) => (
+              <View style={[styles.tabIcon, focused && { backgroundColor: `${colors.primary}18` }]}>
+                <FontAwesome name={icon} size={focused ? size : size - 1} color={color} />
+              </View>
             ),
           }}
         />
@@ -45,3 +56,13 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabIcon: {
+    width: 38,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

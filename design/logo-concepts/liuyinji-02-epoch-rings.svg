@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">流银纪 Logo 方案二：纪元环</title>
+  <desc id="desc">上下左右双轴对称的双层纪元刻度环</desc>
+  <rect width="1024" height="1024" rx="224" fill="#050A14"/>
+  <defs>
+    <path id="outerArc" d="M744 320A300 300 0 0 1 812 512A300 300 0 0 1 744 704"/>
+    <path id="innerArc" d="M655 390A190 190 0 0 1 702 512A190 190 0 0 1 655 634"/>
+  </defs>
+  <g fill="none" stroke="#DCE5EC" stroke-width="72" stroke-linecap="butt">
+    <use href="#outerArc"/>
+    <use href="#outerArc" transform="rotate(90 512 512)"/>
+    <use href="#outerArc" transform="rotate(180 512 512)"/>
+    <use href="#outerArc" transform="rotate(270 512 512)"/>
+  </g>
+  <g fill="none" stroke="#607B8E" stroke-width="28" stroke-linecap="round">
+    <use href="#innerArc"/>
+    <use href="#innerArc" transform="rotate(90 512 512)"/>
+    <use href="#innerArc" transform="rotate(180 512 512)"/>
+    <use href="#innerArc" transform="rotate(270 512 512)"/>
+  </g>
+  <rect x="438" y="438" width="148" height="148" rx="36" fill="#0B1722" stroke="#DCE5EC" stroke-width="20" transform="rotate(45 512 512)"/>
+  <circle cx="512" cy="512" r="34" fill="#DCE5EC"/>
+  <circle cx="512" cy="512" r="13" fill="#050A14"/>
+</svg>

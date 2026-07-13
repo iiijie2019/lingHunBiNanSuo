@@ -27,7 +27,7 @@ export default function DiceRollScreen() {
   const total = results.reduce((a, b) => a + b, 0);
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView cosmic style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <Pressable style={styles.backRow} onPress={() => router.dismiss()}>
           <FontAwesome name="angle-left" size={20} color="#AF52DE" />

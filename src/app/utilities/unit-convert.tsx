@@ -85,10 +85,10 @@ export default function UnitConvertScreen() {
       result: u.fromBase(base).toFixed(6).replace(/\.?0+$/, ''),
       isSource: i === fromIdx,
     }));
-  }, [value, fromUnit, units]);
+  }, [fromIdx, fromUnit, units, value]);
 
   return (
-    <ThemedView style={s.container}>
+    <ThemedView cosmic style={s.container}>
       <SafeAreaView style={s.safe} edges={['top']}>
         <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
           <Pressable style={s.back} onPress={() => router.dismiss()}>
@@ -125,10 +125,10 @@ export default function UnitConvertScreen() {
                 placeholder="输入数值"
                 placeholderTextColor="#999"
               />
-              <Pressable style={s.currentUnit}>
+              <ThemedView style={s.currentUnit}>
                 <ThemedText style={s.currentAbbr}>{fromUnit.abbr}</ThemedText>
                 <ThemedText type="small" themeColor="textSecondary" style={{ fontSize: 11 }}>{fromUnit.full}</ThemedText>
-              </Pressable>
+              </ThemedView>
             </ThemedView>
 
             {/* 单位 chip 选择 */}

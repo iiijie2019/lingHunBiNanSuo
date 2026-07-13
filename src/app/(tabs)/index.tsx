@@ -1,19 +1,21 @@
 import { FontAwesome } from '@expo/vector-icons';
-import { Link } from 'expo-router';
-import { useMemo } from 'react';
+import { Link, router, type Href } from 'expo-router';
+import { useMemo, type ComponentProps } from 'react';
 import { Pressable, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { getRandomQuote } from '@/constants/quotes';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { BottomTabInset, BrandColors, MaxContentWidth, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import { today, useStore } from '@/stores/useStore';
 
 const WEEKDAY_NAMES = ['日', '一', '二', '三', '四', '五', '六'];
 
 export default function HomeScreen() {
-  const { habits, moods } = useStore();
+  const theme = useTheme();
+  const { habits, moods, diary } = useStore();
   const now = new Date();
   const todaysDate = today();
   const weekday = WEEKDAY_NAMES[now.getDay()];
@@ -24,27 +26,31 @@ export default function HomeScreen() {
   const completedToday = habits.filter((h) => h.completedDates.includes(todaysDate)).length;
   const totalHabits = habits.length;
   const todayMood = moods.find((m) => m.date === todaysDate);
-  const recentMoods = moods.slice(0, 7);
+  const todayLogs = diary.filter((entry) => entry.date === todaysDate);
+  const latestTodayLog = todayLogs[0];
+  const recentLogs = diary.slice(0, 3);
+  const todayJourneyEmoji = latestTodayLog?.moodEmoji ?? todayMood?.mood;
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView cosmic style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           {/* 头部 */}
           <ThemedView style={styles.header}>
             <ThemedView style={styles.headerLeft}>
-              <ThemedText style={styles.greeting}>👋 你好</ThemedText>
+              <ThemedText type="smallBold" style={{ color: theme.primary }}>流银纪 · 今日航程</ThemedText>
+              <ThemedText style={styles.greeting}>你好，时间旅人</ThemedText>
               <ThemedText type="default" themeColor="textSecondary">
                 周{weekday} · {dateStr}
               </ThemedText>
             </ThemedView>
-            <Link href="/mood" asChild>
-              <Pressable style={styles.moodButton}>
-                {todayMood ? (
-                  <ThemedText style={styles.headerMood}>{todayMood.mood}</ThemedText>
+            <Link href="/diary" asChild>
+              <Pressable style={styles.logButton}>
+                {todayJourneyEmoji ? (
+                  <ThemedText style={styles.headerMood}>{todayJourneyEmoji}</ThemedText>
                 ) : (
-                  <ThemedView style={styles.addMoodBtn}>
-                    <FontAwesome name="plus" size={14} color="#FFFFFF" />
+                  <ThemedView style={[styles.addLogBtn, { backgroundColor: `${BrandColors.cosmicViolet}1C` }]}>
+                    <FontAwesome name="book" size={16} color={BrandColors.cosmicViolet} />
                   </ThemedView>
                 )}
               </Pressable>
@@ -52,11 +58,13 @@ export default function HomeScreen() {
           </ThemedView>
 
           {/* 每日金句 */}
-          <ThemedView type="backgroundElement" style={styles.quoteCard}>
-            <ThemedView style={styles.quoteBar} />
+          <ThemedView type="backgroundElement" style={[styles.quoteCard, { borderColor: theme.backgroundSelected }]}>
+            <ThemedView style={[styles.quoteMark, { backgroundColor: `${theme.primary}18` }]}>
+              <FontAwesome name="star" size={14} color={theme.primary} />
+            </ThemedView>
             <ThemedView style={styles.quoteBody}>
               <ThemedText type="small" themeColor="textSecondary" style={styles.quoteText}>
-                "{dailyQuote.text}"
+                “{dailyQuote.text}”
               </ThemedText>
               <ThemedText type="small" themeColor="textSecondary" style={styles.quoteAuthor}>
                 —— {dailyQuote.author}
@@ -68,9 +76,9 @@ export default function HomeScreen() {
           <ThemedView style={styles.statsRow}>
             <Link href="/habits" asChild>
               <Pressable style={styles.statCardWrapper}>
-                <ThemedView type="backgroundElement" style={styles.statCard}>
-                  <ThemedView style={[styles.statIconBox, { backgroundColor: '#34C75918' }]}>
-                    <FontAwesome name="check-circle" size={22} color="#34C759" />
+                <ThemedView type="backgroundElement" style={[styles.statCard, { borderColor: `${BrandColors.aurora}35` }]}>
+                  <ThemedView style={[styles.statIconBox, { backgroundColor: `${BrandColors.aurora}18` }]}>
+                    <FontAwesome name="check-circle" size={22} color={BrandColors.aurora} />
                   </ThemedView>
                   <ThemedText style={styles.statValue}>
                     {totalHabits > 0 ? `${completedToday}/${totalHabits}` : '—'}
@@ -80,16 +88,14 @@ export default function HomeScreen() {
               </Pressable>
             </Link>
 
-            <Link href="/mood" asChild>
+            <Link href="/diary" asChild>
               <Pressable style={styles.statCardWrapper}>
-                <ThemedView type="backgroundElement" style={styles.statCard}>
-                  <ThemedView style={[styles.statIconBox, { backgroundColor: '#FF6B6B18' }]}>
-                    <FontAwesome name="heart" size={22} color="#FF6B6B" />
+                <ThemedView type="backgroundElement" style={[styles.statCard, { borderColor: `${BrandColors.cosmicViolet}35` }]}>
+                  <ThemedView style={[styles.statIconBox, { backgroundColor: `${BrandColors.cosmicViolet}18` }]}>
+                    <FontAwesome name="book" size={21} color={BrandColors.cosmicViolet} />
                   </ThemedView>
-                  <ThemedText style={styles.statValue}>
-                    {todayMood ? todayMood.mood : '?'}
-                  </ThemedText>
-                  <ThemedText type="small" themeColor="textSecondary">今日心情</ThemedText>
+                  <ThemedText style={styles.statValue}>{todayLogs.length > 0 ? `${todayLogs.length}篇` : '—'}</ThemedText>
+                  <ThemedText type="small" themeColor="textSecondary">航行日志</ThemedText>
                 </ThemedView>
               </Pressable>
             </Link>
@@ -97,38 +103,68 @@ export default function HomeScreen() {
 
           {/* 快捷入口 */}
           <ThemedView style={styles.sectionHeader}>
-            <ThemedText type="smallBold" themeColor="textSecondary">快捷入口</ThemedText>
+            <ThemedText type="smallBold">探索入口</ThemedText>
           </ThemedView>
 
           <ThemedView style={styles.quickLinks}>
-            <QuickLink href="/habits" icon="check-circle" color="#34C759" label="习惯打卡" />
-            <QuickLink href="/mood" icon="smile-o" color="#FF6B6B" label="心情日记" />
-            <QuickLink href="/diary" icon="book" color="#AF52DE" label="日记" />
-            <QuickLink href="/utilities" icon="wrench" color="#FF9500" label="实用工具" />
-            <QuickLink href="/profile" icon="user" color="#208AEF" label="个人中心" />
+            <QuickLink
+              href="/games"
+              icon="gamepad"
+              color={BrandColors.novaRose}
+              label="挑战"
+            />
+            <QuickLink
+              href="/utilities"
+              icon="wrench"
+              color={BrandColors.solar}
+              label="工具"
+            />
+            <QuickLink
+              href="/data"
+              icon="database"
+              color={BrandColors.cosmicViolet}
+              label="档案"
+            />
+            <QuickLink
+              href="/profile"
+              icon="rocket"
+              color={BrandColors.cometBlue}
+              label="旅程"
+            />
           </ThemedView>
 
-          {/* 最近心情 */}
-          {recentMoods.length > 0 && (
+          {/* 最近日志 */}
+          {recentLogs.length > 0 && (
             <>
               <ThemedView style={styles.sectionHeader}>
-                <ThemedText type="smallBold" themeColor="textSecondary">最近心情</ThemedText>
-                <Link href="/mood" asChild>
+                <ThemedText type="smallBold" themeColor="textSecondary">最近航行日志</ThemedText>
+                <Link href="/diary" asChild>
                   <Pressable>
-                    <ThemedText type="small" style={styles.viewAll}>查看全部</ThemedText>
+                    <ThemedText type="small" style={[styles.viewAll, { color: theme.primary }]}>查看全部</ThemedText>
                   </Pressable>
                 </Link>
               </ThemedView>
-              <ThemedView type="backgroundElement" style={styles.moodStrip}>
-                {recentMoods.map((m) => (
-                  <ThemedView key={m.id} style={styles.moodStripItem}>
-                    <ThemedText style={styles.moodStripEmoji}>{m.mood}</ThemedText>
-                    <ThemedText type="small" themeColor="textSecondary">
-                      {m.date.slice(5)}
-                    </ThemedText>
+              <Link href="/diary" asChild>
+                <Pressable style={({ pressed }) => pressed && styles.pressed}>
+                  <ThemedView type="backgroundElement" style={styles.logList}>
+                    {recentLogs.map((entry, index) => (
+                      <ThemedView
+                        key={entry.id}
+                        style={[styles.logItem, index < recentLogs.length - 1 && { borderBottomColor: theme.backgroundSelected }]}
+                      >
+                        <ThemedView style={[styles.logIcon, { backgroundColor: `${BrandColors.cosmicViolet}16` }]}>
+                          <ThemedText style={styles.logEmoji}>{entry.moodEmoji ?? '✦'}</ThemedText>
+                        </ThemedView>
+                        <ThemedView style={styles.logCopy}>
+                          <ThemedText type="smallBold" numberOfLines={1}>{entry.title}</ThemedText>
+                          <ThemedText type="small" themeColor="textSecondary">{entry.date.slice(5)}</ThemedText>
+                        </ThemedView>
+                        <FontAwesome name="angle-right" size={15} color={theme.textSecondary} />
+                      </ThemedView>
+                    ))}
                   </ThemedView>
-                ))}
-              </ThemedView>
+                </Pressable>
+              </Link>
             </>
           )}
 
@@ -139,19 +175,31 @@ export default function HomeScreen() {
   );
 }
 
-// 快捷入口子组件
 function QuickLink({ href, icon, color, label }: {
-  href: string; icon: any; color: string; label: string;
+  href: Href;
+  icon: ComponentProps<typeof FontAwesome>['name'];
+  color: string;
+  label: string;
 }) {
   return (
-    <Link href={href as any} asChild>
-      <Pressable style={styles.quickLink}>
-        <ThemedView type="backgroundElement" style={[styles.quickLinkIcon, { borderColor: color + '30' }]}>
-          <FontAwesome name={icon} size={22} color={color} />
+    <Pressable
+      accessibilityLabel={`打开${label}`}
+      accessibilityRole="link"
+      onPress={() => router.push(href)}
+      style={({ pressed }) => [styles.quickLink, pressed && styles.pressed]}
+    >
+      <ThemedView
+        type="backgroundElement"
+        style={[styles.quickLinkCard, { borderColor: `${color}36` }]}
+      >
+        <ThemedView style={[styles.quickLinkIcon, { backgroundColor: `${color}16` }]}>
+          <FontAwesome name={icon} size={18} color={color} />
         </ThemedView>
-        <ThemedText type="small">{label}</ThemedText>
-      </Pressable>
-    </Link>
+        <ThemedText type="smallBold" numberOfLines={1} style={styles.quickLinkTitle}>
+          {label}
+        </ThemedText>
+      </ThemedView>
+    </Pressable>
   );
 }
 
@@ -166,19 +214,20 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.three,
   },
   headerLeft: { gap: Spacing.half },
-  greeting: { fontSize: 30, fontWeight: '700', lineHeight: 38 },
-  moodButton: { padding: Spacing.one },
+  greeting: { fontSize: 30, fontWeight: '700', lineHeight: 38, letterSpacing: 0.5 },
+  logButton: { padding: Spacing.one },
   headerMood: { fontSize: 40, lineHeight: 48 },
-  addMoodBtn: {
-    width: 32, height: 32, borderRadius: 16,
-    backgroundColor: '#208AEF', alignItems: 'center', justifyContent: 'center',
+  addLogBtn: {
+    width: 40, height: 40, borderRadius: 14,
+    alignItems: 'center', justifyContent: 'center',
   },
 
   // Quote
   quoteCard: {
-    flexDirection: 'row', borderRadius: Spacing.three, overflow: 'hidden',
+    flexDirection: 'row', alignItems: 'center', borderRadius: 20,
+    borderWidth: StyleSheet.hairlineWidth, paddingLeft: Spacing.three,
   },
-  quoteBar: { width: 4, backgroundColor: '#208AEF' },
+  quoteMark: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
   quoteBody: { flex: 1, padding: Spacing.four, gap: Spacing.one },
   quoteText: { lineHeight: 20 },
   quoteAuthor: { opacity: 0.5 },
@@ -188,7 +237,8 @@ const styles = StyleSheet.create({
   statCardWrapper: { flex: 1 },
   statCard: {
     paddingVertical: Spacing.four, paddingHorizontal: Spacing.three,
-    borderRadius: Spacing.three, alignItems: 'center', gap: Spacing.two,
+    borderRadius: 20, alignItems: 'center', gap: Spacing.two,
+    borderWidth: StyleSheet.hairlineWidth,
   },
   statIconBox: {
     width: 44, height: 44, borderRadius: 14,
@@ -201,22 +251,35 @@ const styles = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingTop: Spacing.one,
   },
-  viewAll: { color: '#208AEF' },
+  viewAll: { fontWeight: '700' },
 
   // Quick links
-  quickLinks: { flexDirection: 'row', gap: Spacing.two },
-  quickLink: { flex: 1, alignItems: 'center', gap: Spacing.two },
+  quickLinks: {
+    width: '100%', flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.two,
+  },
+  quickLink: {
+    flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: 0, aspectRatio: 1,
+  },
+  pressed: { opacity: 0.7, transform: [{ scale: 0.96 }] },
+  quickLinkCard: {
+    flex: 1, width: '100%', alignItems: 'center', justifyContent: 'center',
+    gap: Spacing.one, padding: Spacing.one, borderRadius: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
   quickLinkIcon: {
-    width: 50, height: 50, borderRadius: 15, borderWidth: 1,
+    width: 32, height: 32, borderRadius: 10,
     alignItems: 'center', justifyContent: 'center',
   },
+  quickLinkTitle: { width: '100%', fontSize: 11, lineHeight: 14, textAlign: 'center' },
 
-  // Mood strip
-  moodStrip: {
-    flexDirection: 'row', paddingVertical: Spacing.three,
-    paddingHorizontal: Spacing.two, borderRadius: Spacing.three,
-    justifyContent: 'space-around',
+  // Recent logs
+  logList: { borderRadius: 18, overflow: 'hidden' },
+  logItem: {
+    minHeight: 60, flexDirection: 'row', alignItems: 'center', gap: Spacing.three,
+    paddingHorizontal: Spacing.three, paddingVertical: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'transparent',
   },
-  moodStripItem: { alignItems: 'center', gap: Spacing.half, padding:5, borderRadius: 5, },
-  moodStripEmoji: { fontSize: 28, lineHeight: 36 },
+  logIcon: { width: 38, height: 38, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
+  logEmoji: { fontSize: 20, lineHeight: 26 },
+  logCopy: { flex: 1, minWidth: 0, gap: 1 },
 });

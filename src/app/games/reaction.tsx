@@ -73,7 +73,7 @@ export default function ReactionScreen() {
   const bgColor = phase === 'go' ? '#34C759' : phase === 'too-early' ? '#FF3B30' : phase === 'ready' ? '#FF9500' : undefined;
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView cosmic style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           <Pressable style={styles.backRow} onPress={() => { cleanup(); router.dismiss(); }}>

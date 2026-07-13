@@ -3,24 +3,49 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import React, { useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
+import { Alert, Platform, Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { LogoSpinner } from '@/components/logo-spinner';
 import { Spacing } from '@/constants/theme';
-import { saveState } from '@/stores/storage';
-import { useDispatch, useStore, type AppState } from '@/stores/useStore';
+import { useTheme } from '@/hooks/use-theme';
+import { createInitialState, normalizeAppState, today, useDispatch, useStore } from '@/stores/useStore';
+import { confirmAction } from '@/utils/confirm-action';
 
 export default function DataScreen() {
   const state = useStore();
   const dispatch = useDispatch();
+  const theme = useTheme();
   const [importJson, setImportJson] = useState('');
+  const [busy, setBusy] = useState(false);
+  const feelingDays = new Set([
+    ...state.moods.map((entry) => entry.date),
+    ...state.diary.filter((entry) => entry.moodEmoji).map((entry) => entry.date),
+  ]).size;
 
   const exportData = async () => {
+    if (busy) return;
+    setBusy(true);
     try {
       const json = JSON.stringify(state, null, 2);
-      const fileName = `soul_refuge_backup_${new Date().toISOString().slice(0, 10)}.json`;
+      const fileName = `liuyinji_backup_${today()}.json`;
+
+      if (Platform.OS === 'web') {
+        const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = fileName;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 0);
+        return;
+      }
+
+      if (!FileSystem.cacheDirectory) throw new Error('当前设备无法创建临时文件');
       const path = `${FileSystem.cacheDirectory}${fileName}`;
       await FileSystem.writeAsStringAsync(path, json);
 
@@ -34,8 +59,10 @@ export default function DataScreen() {
       } else {
         Alert.alert('导出成功', `文件已保存到:\n${path}`);
       }
-    } catch (e: any) {
-      Alert.alert('导出失败', e.message);
+    } catch (error: unknown) {
+      Alert.alert('导出失败', error instanceof Error ? error.message : '未知错误');
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -46,56 +73,43 @@ export default function DataScreen() {
       return;
     }
     try {
-      const parsed: AppState = JSON.parse(t);
-      // Basic validation
-      if (!parsed.habits || !parsed.moods || !parsed.gameRecords) {
+      const parsed = normalizeAppState(JSON.parse(t));
+      if (!parsed) {
         Alert.alert('错误', '数据格式不正确，请检查');
         return;
       }
-      Alert.alert('确认导入', '导入将会覆盖当前所有数据，确定继续？', [
-        { text: '取消', style: 'cancel' },
-        {
-          text: '确定导入', style: 'destructive',
-          onPress: async () => {
-            dispatch({ type: 'HYDRATE', state: parsed });
-            await saveState(parsed);
-            setImportJson('');
-            Alert.alert('导入成功', '数据已恢复');
-          },
+      confirmAction({
+        title: '确认导入',
+        message: '导入将会覆盖当前所有数据，确定继续？',
+        confirmText: '确定导入',
+        destructive: true,
+        onConfirm: () => {
+          dispatch({ type: 'HYDRATE', state: parsed });
+          setImportJson('');
+          Alert.alert('导入成功', '数据已恢复');
         },
-      ]);
-    } catch (e: any) {
-      Alert.alert('导入失败', 'JSON 解析错误: ' + e.message);
+      });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : '未知错误';
+      Alert.alert('导入失败', `JSON 解析错误: ${message}`);
     }
   };
 
   const resetAll = () => {
-    Alert.alert('⚠️ 清除所有数据', '此操作不可撤销，所有数据将被永久删除。确定继续？', [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '确定清除', style: 'destructive',
-        onPress: () => {
-          const empty: AppState = {
-            habits: [], moods: [], diary: [],
-            gameRecords: {
-              guessNumber: { best: 999, games: 0, extra1: 0, extra2: 0, lastPlayed: null },
-              whackAMole: { best: 0, games: 0, extra1: 0, extra2: 0, lastPlayed: null },
-              reaction: { best: 9999, games: 0, extra1: 0, extra2: 0, lastPlayed: null },
-              memoryCard: { best: 0, games: 0, extra1: 0, extra2: 0, lastPlayed: null },
-              colorWord: { best: 0, games: 0, extra1: 0, extra2: 0, lastPlayed: null },
-              mathChallenge: { best: 0, games: 0, extra1: 0, extra2: 0, lastPlayed: null },
-            },
-          };
-          dispatch({ type: 'HYDRATE', state: empty });
-          saveState(empty);
-          Alert.alert('已清除', '所有数据已被删除');
-        },
+    confirmAction({
+      title: '⚠️ 清除所有数据',
+      message: '此操作不可撤销，所有数据将被永久删除。确定继续？',
+      confirmText: '确定清除',
+      destructive: true,
+      onConfirm: () => {
+        dispatch({ type: 'HYDRATE', state: createInitialState() });
+        Alert.alert('已清除', '所有数据已被删除');
       },
-    ]);
+    });
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView cosmic style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           <ThemedView style={styles.header}>
@@ -105,21 +119,21 @@ export default function DataScreen() {
               </ThemedView>
               <ThemedText type="small" style={styles.backLabel}>返回</ThemedText>
             </Pressable>
-            <ThemedText type="subtitle">数据管理</ThemedText>
+            <ThemedText type="subtitle">航行档案</ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
-              导出、备份与恢复数据
+              安全保管你的每一段探索记录
             </ThemedText>
           </ThemedView>
 
           {/* 数据概览 */}
           <ThemedView type="backgroundElement" style={styles.card}>
             <ThemedText type="smallBold" themeColor="textSecondary" style={styles.sectionLabel}>
-              📊 数据概览
+              ✦ 星图概览
             </ThemedText>
             <ThemedView style={styles.statsGrid}>
               <StatItem label="习惯" value={`${state.habits.length} 个`} />
-              <StatItem label="心情" value={`${state.moods.length} 条`} />
-              <StatItem label="日记" value={`${(state.diary ?? []).length} 篇`} />
+              <StatItem label="感受" value={`${feelingDays} 天`} />
+              <StatItem label="日志" value={`${(state.diary ?? []).length} 篇`} />
               <StatItem label="游戏" value={`${Object.values(state.gameRecords).filter(r => r.games > 0).length} 个`} />
             </ThemedView>
           </ThemedView>
@@ -130,11 +144,11 @@ export default function DataScreen() {
               📤 导出数据
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary" style={styles.desc}>
-              将所有数据（习惯、心情、日记、游戏记录）导出为 JSON 文件，可用于备份或迁移
+              将所有数据（习惯、感受、航行日志、游戏记录）导出为 JSON 文件，可用于备份或迁移
             </ThemedText>
-            <Pressable style={styles.actionBtn} onPress={exportData}>
-              <FontAwesome name="download" size={16} color="#FFFFFF" />
-              <ThemedText style={styles.actionBtnText}>导出 JSON 文件</ThemedText>
+            <Pressable style={[styles.actionBtn, busy && styles.buttonDisabled]} onPress={exportData} disabled={busy}>
+              {busy ? <LogoSpinner size={20} duration={800} /> : <FontAwesome name="download" size={16} color="#FFFFFF" />}
+              <ThemedText style={styles.actionBtnText}>{busy ? '正在导出...' : '导出 JSON 文件'}</ThemedText>
             </Pressable>
           </ThemedView>
 
@@ -148,7 +162,7 @@ export default function DataScreen() {
             </ThemedText>
             <ThemedView type="backgroundElement" style={styles.importInputWrapper}>
               <TextInput
-                style={styles.importInput}
+                style={[styles.importInput, { color: theme.text }]}
                 placeholder="在此粘贴 JSON 数据..."
                 placeholderTextColor="#999"
                 value={importJson}
@@ -158,7 +172,11 @@ export default function DataScreen() {
                 textAlignVertical="top"
               />
             </ThemedView>
-            <Pressable style={[styles.actionBtn, styles.importBtn]} onPress={importData}>
+            <Pressable
+              style={[styles.actionBtn, styles.importBtn, !importJson.trim() && styles.buttonDisabled]}
+              onPress={importData}
+              disabled={!importJson.trim()}
+            >
               <FontAwesome name="upload" size={16} color="#FFFFFF" />
               <ThemedText style={styles.actionBtnText}>导入数据</ThemedText>
             </Pressable>
@@ -170,7 +188,7 @@ export default function DataScreen() {
               🗑 清除数据
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary" style={styles.desc}>
-              删除所有本地数据（习惯、心情、日记）。游戏记录将保留。
+              删除所有本地数据，包括习惯、感受、航行日志和游戏记录。
             </ThemedText>
             <Pressable style={[styles.actionBtn, styles.dangerBtn]} onPress={resetAll}>
               <FontAwesome name="trash" size={16} color="#FFFFFF" />
@@ -233,11 +251,12 @@ const styles = StyleSheet.create({
   actionBtnText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
   importBtn: { backgroundColor: '#34C759' },
   dangerBtn: { backgroundColor: '#FF3B30' },
+  buttonDisabled: { opacity: 0.45 },
 
   // Import input
   importInputWrapper: {
     borderRadius: Spacing.three, paddingHorizontal: Spacing.three, paddingVertical: Spacing.two,
     borderWidth: 1, borderColor: '#FF950030',
   },
-  importInput: { fontSize: 14, minHeight: 80, color: '#FF9500', lineHeight: 20 },
+  importInput: { fontSize: 14, minHeight: 80, lineHeight: 20 },
 });

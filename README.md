@@ -1,4 +1,4 @@
-# Welcome to your Expo app 👋
+# 流银纪
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
@@ -116,5 +116,4 @@ RuntimeVersion 隔离机制：
 强制更新 vs 柔性更新：
 默认是柔性更新（下次启动生效）。如果你遇到严重 Bug 需要立刻生效，可以在发布时加上 --force 参数，但这会导致用户在使用过程中 App 突然重启，需谨慎使用：
 eas update --branch production --message "紧急修复白屏" --force
-
 

@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useEffect, useReducer, useRef, type Dispatch } from 'react';
+import React, { createContext, useContext, useEffect, useReducer, useState, type Dispatch } from 'react';
 
 import { loadState, saveState } from '@/stores/storage';
+import { isLocalDateKey, localDateKey } from '@/utils/local-date';
 
 // ============================================================
 // Types
@@ -61,11 +62,17 @@ export interface GameRecords {
   mathChallenge: GameRecord; // best = highest correct count; extra1 = best accuracy %
 }
 
+export interface EntryPreferences {
+  hiddenGames: string[];
+  hiddenTools: string[];
+}
+
 export interface AppState {
   habits: Habit[];
   moods: MoodEntry[];
   diary: DiaryEntry[];
   gameRecords: GameRecords;
+  entryPreferences: EntryPreferences;
 }
 
 // ============================================================
@@ -76,7 +83,7 @@ function defaultGameRecord(): GameRecord {
   return { best: 0, games: 0, extra1: 0, extra2: 0, lastPlayed: null };
 }
 
-function defaultGameRecords(): GameRecords {
+export function defaultGameRecords(): GameRecords {
   return {
     guessNumber: { ...defaultGameRecord(), best: 999 },
     whackAMole: defaultGameRecord(),
@@ -97,7 +104,100 @@ function genId(): string {
 }
 
 export function today(): string {
-  return new Date().toISOString().slice(0, 10);
+  return localDateKey();
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function normalizeGameRecord(value: unknown, fallback: GameRecord): GameRecord {
+  if (!isRecord(value)) return fallback;
+  const finiteOr = (candidate: unknown, defaultValue: number) =>
+    typeof candidate === 'number' && Number.isFinite(candidate) ? candidate : defaultValue;
+
+  return {
+    best: finiteOr(value.best, fallback.best),
+    games: Math.max(0, Math.floor(finiteOr(value.games, fallback.games))),
+    extra1: finiteOr(value.extra1, fallback.extra1),
+    extra2: finiteOr(value.extra2, fallback.extra2),
+    lastPlayed: isLocalDateKey(value.lastPlayed) ? value.lastPlayed : null,
+  };
+}
+
+/** Validate and migrate persisted or imported data before it reaches the UI. */
+export function normalizeAppState(value: unknown): AppState | null {
+  if (!isRecord(value) || !Array.isArray(value.habits) || !Array.isArray(value.moods)) {
+    return null;
+  }
+
+  const habits = value.habits.map((item) => {
+    if (!isRecord(item) || typeof item.id !== 'string' || typeof item.name !== 'string' ||
+        typeof item.emoji !== 'string' || !Array.isArray(item.completedDates)) return null;
+    if (!item.completedDates.every(isLocalDateKey)) return null;
+    return {
+      id: item.id,
+      name: item.name,
+      emoji: item.emoji,
+      completedDates: [...new Set(item.completedDates)].sort(),
+      createdAt: typeof item.createdAt === 'string' ? item.createdAt : today(),
+    } satisfies Habit;
+  });
+  if (habits.some((item) => item === null)) return null;
+
+  const moods = value.moods.map((item) => {
+    if (!isRecord(item) || typeof item.id !== 'string' || !isLocalDateKey(item.date) ||
+        typeof item.mood !== 'string' || typeof item.note !== 'string') return null;
+    return { id: item.id, date: item.date, mood: item.mood, note: item.note } satisfies MoodEntry;
+  });
+  if (moods.some((item) => item === null)) return null;
+
+  const rawDiary = value.diary ?? [];
+  if (!Array.isArray(rawDiary)) return null;
+  const diary = rawDiary.map((item) => {
+    if (!isRecord(item) || typeof item.id !== 'string' || !isLocalDateKey(item.date) ||
+        typeof item.createdAt !== 'string' || Number.isNaN(Date.parse(item.createdAt)) || typeof item.title !== 'string' ||
+        typeof item.content !== 'string') return null;
+    const tags = Array.isArray(item.tags) && item.tags.every((tag) => typeof tag === 'string')
+      ? item.tags
+      : [];
+    return {
+      id: item.id,
+      date: item.date,
+      createdAt: item.createdAt,
+      title: item.title,
+      content: item.content,
+      moodEmoji: typeof item.moodEmoji === 'string' ? item.moodEmoji : undefined,
+      tags,
+    } satisfies DiaryEntry;
+  });
+  if (diary.some((item) => item === null)) return null;
+
+  const defaults = defaultGameRecords();
+  const rawRecords = isRecord(value.gameRecords) ? value.gameRecords : {};
+  const gameRecords = Object.fromEntries(
+    (Object.keys(defaults) as (keyof GameRecords)[]).map((key) => [
+      key,
+      normalizeGameRecord(rawRecords[key], defaults[key]),
+    ]),
+  ) as unknown as GameRecords;
+
+  const rawPreferences = isRecord(value.entryPreferences) ? value.entryPreferences : {};
+  const stringList = (candidate: unknown) => Array.isArray(candidate)
+    ? [...new Set(candidate.filter((item): item is string => typeof item === 'string'))]
+    : [];
+  const entryPreferences: EntryPreferences = {
+    hiddenGames: stringList(rawPreferences.hiddenGames),
+    hiddenTools: stringList(rawPreferences.hiddenTools),
+  };
+
+  return {
+    habits: habits as Habit[],
+    moods: moods as MoodEntry[],
+    diary: diary as DiaryEntry[],
+    gameRecords,
+    entryPreferences,
+  };
 }
 
 // ============================================================
@@ -118,6 +218,8 @@ type Action =
   | { type: 'DELETE_DIARY'; id: string }
   // Game records
   | { type: 'SAVE_GAME_RECORD'; game: keyof GameRecords; score: number; extra1?: number; extra2?: number }
+  // Entry visibility
+  | { type: 'SET_HIDDEN_ENTRIES'; category: keyof EntryPreferences; entries: string[] }
   // Hydration from storage
   | { type: 'HYDRATE'; state: AppState };
 
@@ -253,16 +355,26 @@ function reducer(state: AppState, action: Action): AppState {
       };
     }
 
+    case 'SET_HIDDEN_ENTRIES':
+      return {
+        ...state,
+        entryPreferences: {
+          ...state.entryPreferences,
+          [action.category]: [...new Set(action.entries)],
+        },
+      };
+
     // ---- Hydration ----
     case 'HYDRATE':
       return {
         ...action.state,
-        // Ensure gameRecords and diary exist for migrations from older stored state
+        // Normalized state already supplies defaults for data added by later versions.
         diary: action.state.diary ?? [],
         gameRecords: {
           ...defaultGameRecords(),
           ...action.state.gameRecords,
         },
+        entryPreferences: action.state.entryPreferences,
       };
 
     default:
@@ -274,45 +386,46 @@ function reducer(state: AppState, action: Action): AppState {
 // Context
 // ============================================================
 
-const initialState: AppState = {
-  habits: [],
-  moods: [],
-  diary: [],
-  gameRecords: defaultGameRecords(),
-};
+export function createInitialState(): AppState {
+  return {
+    habits: [],
+    moods: [],
+    diary: [],
+    gameRecords: defaultGameRecords(),
+    entryPreferences: { hiddenGames: [], hiddenTools: [] },
+  };
+}
+
+const initialState = createInitialState();
 
 const StateContext = createContext<AppState>(initialState);
 const DispatchContext = createContext<Dispatch<Action>>(() => {});
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const hydrated = useRef(false);
+  const [hydrated, setHydrated] = useState(false);
 
   // Load persisted state on mount
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const saved = await loadState<AppState>();
-      if (saved && !cancelled) {
-        dispatch({ type: 'HYDRATE', state: saved });
+      const saved = normalizeAppState(await loadState<unknown>());
+      if (!cancelled) {
+        if (saved) dispatch({ type: 'HYDRATE', state: saved });
+        setHydrated(true);
       }
-      hydrated.current = true;
     })();
     return () => { cancelled = true; };
   }, []);
 
-  // Persist state on every change (after initial hydration)
-  const isFirstRender = useRef(true);
+  // Debounce persistence so rapid game and typing updates cannot race each other.
   useEffect(() => {
-    // Skip the first render — that's hydration, not a user change
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    // Only persist after hydration is done
-    if (!hydrated.current) return;
-    saveState(state);
-  }, [state]);
+    if (!hydrated) return;
+    const timer = setTimeout(() => { void saveState(state); }, 120);
+    return () => clearTimeout(timer);
+  }, [state, hydrated]);
+
+  if (!hydrated) return null;
 
   return (
     <StateContext.Provider value={state}>

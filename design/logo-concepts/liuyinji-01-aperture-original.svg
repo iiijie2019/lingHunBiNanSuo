@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">流银纪 Logo 方案一：宇宙沙漏原稿</title>
+  <desc id="desc">上下左右双轴对称的银色时间沙漏与宇宙坐标</desc>
+  <rect width="1024" height="1024" rx="224" fill="#050A14"/>
+  <defs>
+    <path id="half" d="M270 236H754C718 326 648 402 548 478C528 494 496 494 476 478C376 402 306 326 270 236ZM352 300C386 356 438 408 512 464C586 408 638 356 672 300H352Z" fill-rule="evenodd"/>
+  </defs>
+  <circle cx="512" cy="512" r="368" fill="none" stroke="#183043" stroke-width="18"/>
+  <g fill="#DCE5EC">
+    <use href="#half"/>
+    <use href="#half" transform="rotate(180 512 512)"/>
+  </g>
+  <path d="M512 438L586 512L512 586L438 512Z" fill="#0A1621" stroke="#DCE5EC" stroke-width="22"/>
+  <circle cx="512" cy="512" r="24" fill="#DCE5EC"/>
+  <g fill="#71899B">
+    <rect x="172" y="500" width="120" height="24" rx="12"/>
+    <rect x="732" y="500" width="120" height="24" rx="12"/>
+  </g>
+</svg>

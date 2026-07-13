@@ -6,6 +6,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useDispatch, today, type Habit } from '@/stores/useStore';
+import { shiftLocalDateKey } from '@/utils/local-date';
 
 export function HabitRow({ habit, onDelete }: { habit: Habit; onDelete: () => void }) {
   const dispatch = useDispatch();
@@ -14,11 +15,10 @@ export function HabitRow({ habit, onDelete }: { habit: Habit; onDelete: () => vo
 
   let streak = 0;
   const dates = new Set(habit.completedDates);
-  const d = new Date(todaysDate);
-  if (!dates.has(todaysDate)) d.setDate(d.getDate() - 1);
-  while (dates.has(d.toISOString().slice(0, 10))) {
+  let dateKey = dates.has(todaysDate) ? todaysDate : shiftLocalDateKey(todaysDate, -1);
+  while (dates.has(dateKey)) {
     streak++;
-    d.setDate(d.getDate() - 1);
+    dateKey = shiftLocalDateKey(dateKey, -1);
   }
 
   const toggle = () => {
@@ -58,11 +58,8 @@ export function HabitRow({ habit, onDelete }: { habit: Habit; onDelete: () => vo
 function WeekDots({ dates }: { dates: string[] }) {
   const dateSet = new Set(dates);
   const dots: boolean[] = [];
-  const d = new Date(today());
   for (let i = 6; i >= 0; i--) {
-    const dd = new Date(d);
-    dd.setDate(dd.getDate() - i);
-    dots.push(dateSet.has(dd.toISOString().slice(0, 10)));
+    dots.push(dateSet.has(shiftLocalDateKey(today(), -i)));
   }
 
   return (

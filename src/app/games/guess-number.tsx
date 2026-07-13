@@ -29,7 +29,15 @@ export default function GuessNumberScreen() {
 
   const checkGuess = useCallback(() => {
     const n = parseInt(guess, 10);
-    if (isNaN(n) || n < 1 || n > 100) return;
+    if (isNaN(n) || n < 1 || n > 100) {
+      setMessage('请输入 1 到 100 之间的整数');
+      return;
+    }
+    if (attempts.includes(n)) {
+      setMessage('这个数字已经猜过了');
+      setGuess('');
+      return;
+    }
     setAttempts((a) => [n, ...a]);
     setGuess('');
     if (n === target) {
@@ -40,7 +48,7 @@ export default function GuessNumberScreen() {
     } else {
       setMessage('📉 太大了，再小一点');
     }
-  }, [guess, target]);
+  }, [attempts, guess, target]);
 
   const reset = () => {
     setTarget(pickNumber());
@@ -68,17 +76,17 @@ export default function GuessNumberScreen() {
     if (!message) return {};
     if (message.includes('太小')) return { backgroundColor: isDark ? '#FF950020' : '#FF950012', color: '#FF9500' };
     if (message.includes('太大')) return { backgroundColor: isDark ? '#FF6B6B20' : '#FF6B6B12', color: '#FF6B6B' };
-    return { backgroundColor: isDark ? '#34C75920' : '#34C75912', color: '#34C759' };
+    return { backgroundColor: isDark ? '#FF3B3020' : '#FF3B3012', color: '#FF3B30' };
   };
 
   // 动态计算有效范围
   const effectiveMin = attempts.length > 0
-    ? Math.max(1, ...attempts.filter(a => a < target)) : 1;
+    ? Math.max(1, ...attempts.filter(a => a < target).map((a) => a + 1)) : 1;
   const effectiveMax = attempts.length > 0
-    ? Math.min(100, ...attempts.filter(a => a > target)) : 100;
+    ? Math.min(100, ...attempts.filter(a => a > target).map((a) => a - 1)) : 100;
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView cosmic style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ScrollView
           contentContainerStyle={styles.scroll}

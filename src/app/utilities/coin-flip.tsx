@@ -30,7 +30,7 @@ export default function CoinFlipScreen() {
   const negative = history.filter((h) => h === 1).length;
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView cosmic style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <Pressable style={styles.backRow} onPress={() => router.dismiss()}>
           <FontAwesome name="angle-left" size={20} color="#FF9500" />

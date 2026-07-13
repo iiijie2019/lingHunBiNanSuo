@@ -12,8 +12,15 @@ import { useDispatch, useStore } from '@/stores/useStore';
 const EMOJIS = ['🍎','🍊','🍋','🍇','🍓','🫐','🥑','🌽','🧸','🦊','🐸','🐼','🐨','🐙','🦋','🐳','🌻','🍀','⭐','🔥'];
 
 function buildDeck(pairCount: number): string[] {
-  const picked = [...EMOJIS].sort(() => Math.random() - 0.5).slice(0, pairCount);
-  return [...picked, ...picked].sort(() => Math.random() - 0.5);
+  const shuffle = <T,>(items: T[]) => {
+    for (let i = items.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [items[i], items[j]] = [items[j], items[i]];
+    }
+    return items;
+  };
+  const picked = shuffle([...EMOJIS]).slice(0, pairCount);
+  return shuffle([...picked, ...picked]);
 }
 
 export default function MemoryCardScreen() {
@@ -55,7 +62,8 @@ export default function MemoryCardScreen() {
 
     if (newSelected.length === 2) {
       lockRef.current = true;
-      setMoves((m) => m + 1);
+      const nextMoves = moves + 1;
+      setMoves(nextMoves);
       const [a, b] = newSelected;
       if (cards[a] === cards[b]) {
         const newMatched = [...matched];
@@ -70,7 +78,7 @@ export default function MemoryCardScreen() {
           setWon(true);
           if (!gameSavedRef.current) {
             gameSavedRef.current = true;
-            const score = Math.max(1, Math.round((cards.length / moves) * 100));
+            const score = Math.max(1, Math.round((cards.length / nextMoves) * 100));
             dispatch({ type: 'SAVE_GAME_RECORD', game: 'memoryCard', score });
           }
         }
@@ -90,7 +98,7 @@ export default function MemoryCardScreen() {
   const best = bestRecord.best || 0;
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView cosmic style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           <Pressable style={styles.backRow} onPress={() => router.dismiss()}>

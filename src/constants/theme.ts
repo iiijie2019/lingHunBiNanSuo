@@ -7,20 +7,37 @@ import '@/global.css';
 
 import { Platform } from 'react-native';
 
+/** Shared brand palette. Keep native splash, logo assets, and app surfaces in sync. */
+export const BrandColors = {
+  deepSpace: '#081A2F',
+  deepSpaceElevated: '#102A46',
+  deepSpaceSelected: '#183B5C',
+  starlight: '#F1F6F9',
+  silver: '#B8C8D3',
+  meteor: '#71899B',
+  cometBlue: '#5CB9FF',
+  aurora: '#45D6C8',
+  cosmicViolet: '#A78BFA',
+  solar: '#FFC857',
+  novaRose: '#FF6B8A',
+} as const;
+
 export const Colors = {
   light: {
     text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
+    background: '#F2F7FB',
+    backgroundElement: '#FFFFFF',
+    backgroundSelected: '#DCEAF4',
+    textSecondary: '#536A7B',
+    primary: BrandColors.deepSpace,
   },
   dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
+    text: BrandColors.starlight,
+    background: BrandColors.deepSpace,
+    backgroundElement: '#102B49',
+    backgroundSelected: '#1A4268',
+    textSecondary: BrandColors.silver,
+    primary: BrandColors.cometBlue,
   },
 } as const;
 

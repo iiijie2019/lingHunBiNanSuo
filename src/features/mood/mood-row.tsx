@@ -6,6 +6,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useDispatch, type MoodEntry } from '@/stores/useStore';
+import { confirmAction } from '@/utils/confirm-action';
 
 // ============================================================
 // 心情选项（导出供外部使用）
@@ -47,7 +48,13 @@ export function MoodRow({ entry }: { entry: MoodEntry }) {
               {entry.date}
             </ThemedText>
             <Pressable
-              onPress={() => dispatch({ type: 'DELETE_MOOD', id: entry.id })}
+              onPress={() => confirmAction({
+                title: '删除心情记录',
+                message: '确定要删除这条心情记录吗？',
+                confirmText: '删除',
+                destructive: true,
+                onConfirm: () => dispatch({ type: 'DELETE_MOOD', id: entry.id }),
+              })}
             >
               <FontAwesome name="trash" size={14} color="#FF3B30" />
             </Pressable>

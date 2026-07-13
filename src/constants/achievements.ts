@@ -1,4 +1,5 @@
 import type { AppState } from '@/stores/useStore';
+import { calendarDayDifference } from '@/utils/local-date';
 
 // ============================================================
 // Achievement Definitions
@@ -73,35 +74,35 @@ export const ACHIEVEMENTS: Achievement[] = [
     check: (s) => totalCompletions(s) >= 100,
   },
 
-  // ---- 心情记录 ----
+  // ---- 感受记录（航行日志与旧版心情数据） ----
   {
     id: 'mood_first',
     title: '初次表达',
-    description: '记录第一条心情',
+    description: '在航行日志中记录第一次感受',
     emoji: '💬',
     category: 'mood',
-    check: (s) => s.moods.length >= 1,
+    check: (s) => uniqueMoodDays(s) >= 1,
   },
   {
     id: 'mood_7',
     title: '情绪观察者',
-    description: '累计记录 7 天心情',
+    description: '累计记录 7 天感受',
     emoji: '🎭',
     category: 'mood',
-    check: (s) => s.moods.length >= 7,
+    check: (s) => uniqueMoodDays(s) >= 7,
   },
   {
     id: 'mood_30',
     title: '情绪日记',
-    description: '累计记录 30 天心情',
+    description: '累计记录 30 天感受',
     emoji: '📖',
     category: 'mood',
-    check: (s) => s.moods.length >= 30,
+    check: (s) => uniqueMoodDays(s) >= 30,
   },
   {
     id: 'mood_full_week',
     title: '完整一周',
-    description: '连续 7 天记录心情（不中断）',
+    description: '连续 7 天记录感受（不中断）',
     emoji: '🌈',
     category: 'mood',
     check: (s) => moodStreak(s) >= 7,
@@ -169,11 +170,11 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'game_all_played',
     title: '游戏全能',
-    description: '玩过所有 5 个小游戏',
+    description: '玩过所有 6 个有记录的小游戏',
     emoji: '🎮',
     category: 'games',
     check: (s) => {
-      const all = ['guessNumber', 'whackAMole', 'reaction', 'colorWord', 'mathChallenge'] as const;
+      const all = ['guessNumber', 'whackAMole', 'reaction', 'memoryCard', 'colorWord', 'mathChallenge'] as const;
       return all.every((k) => s.gameRecords[k].games > 0);
     },
   },
@@ -189,11 +190,10 @@ function maxStreak(state: AppState): number {
   const sorted = [...allDates].sort().reverse();
   let best = 0;
   let current = 0;
-  let prev: Date | null = null;
+  let previousKey: string | null = null;
   for (const ds of sorted) {
-    const d = new Date(ds);
-    if (prev) {
-      const diff = (prev.getTime() - d.getTime()) / 86400000;
+    if (previousKey) {
+      const diff = calendarDayDifference(previousKey, ds);
       if (diff === 1) {
         current++;
       } else {
@@ -203,7 +203,7 @@ function maxStreak(state: AppState): number {
     } else {
       current = 1;
     }
-    prev = d;
+    previousKey = ds;
   }
   return Math.max(best, current);
 }
@@ -212,16 +212,29 @@ function totalCompletions(state: AppState): number {
   return state.habits.reduce((sum, h) => sum + h.completedDates.length, 0);
 }
 
+function uniqueMoodDays(state: AppState): number {
+  return moodDates(state).length;
+}
+
 function moodStreak(state: AppState): number {
-  const dates = [...new Set(state.moods.map((m) => m.date))].sort().reverse();
+  const dates = moodDates(state);
   if (dates.length === 0) return 0;
   let streak = 1;
   for (let i = 1; i < dates.length; i++) {
-    const diff = (new Date(dates[i - 1]).getTime() - new Date(dates[i]).getTime()) / 86400000;
-    if (Math.round(diff) === 1) streak++;
+    const diff = calendarDayDifference(dates[i - 1], dates[i]);
+    if (diff === 1) streak++;
     else break;
   }
   return streak;
+}
+
+function moodDates(state: AppState): string[] {
+  return [
+    ...new Set([
+      ...state.moods.map((m) => m.date),
+      ...state.diary.filter((entry) => entry.moodEmoji).map((entry) => entry.date),
+    ]),
+  ].sort().reverse();
 }
 
 // ============================================================
@@ -241,8 +254,8 @@ export function getCategoryUnlocked(
 
 export const CATEGORY_CONFIG: Record<Achievement['category'], { label: string; emoji: string }> = {
   habits: { label: '习惯', emoji: '✅' },
-  mood: { label: '心情', emoji: '💖' },
-  diary: { label: '日记', emoji: '📝' },
+  mood: { label: '感受', emoji: '💖' },
+  diary: { label: '日志', emoji: '📝' },
   games: { label: '游戏', emoji: '🎮' },
   general: { label: '综合', emoji: '🏆' },
 };

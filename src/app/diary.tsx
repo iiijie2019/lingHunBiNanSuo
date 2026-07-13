@@ -2,7 +2,6 @@ import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Alert,
   FlatList,
   KeyboardAvoidingView,
   Modal,
@@ -19,6 +18,7 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { MOOD_OPTIONS } from '@/features/mood/mood-row';
 import { useDispatch, useStore, type DiaryEntry } from '@/stores/useStore';
+import { confirmAction } from '@/utils/confirm-action';
 
 export default function DiaryScreen() {
   const { diary } = useStore();
@@ -57,10 +57,13 @@ export default function DiaryScreen() {
   };
 
   const deleteDiary = (entry: DiaryEntry) => {
-    Alert.alert('删除日记', `确定要删除「${entry.title}」吗？`, [
-      { text: '取消', style: 'cancel' },
-      { text: '删除', style: 'destructive', onPress: () => dispatch({ type: 'DELETE_DIARY', id: entry.id }) },
-    ]);
+    confirmAction({
+      title: '删除日记',
+      message: `确定要删除「${entry.title}」吗？`,
+      confirmText: '删除',
+      destructive: true,
+      onConfirm: () => dispatch({ type: 'DELETE_DIARY', id: entry.id }),
+    });
   };
 
   const formatDate = (iso: string) => {
@@ -69,7 +72,7 @@ export default function DiaryScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView cosmic style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ThemedView style={styles.header}>
           <Pressable style={styles.backRow} onPress={() => router.dismiss()}>
@@ -78,9 +81,9 @@ export default function DiaryScreen() {
             </ThemedView>
             <ThemedText type="small" style={styles.backLabel}>返回</ThemedText>
           </Pressable>
-          <ThemedText type="subtitle">日记</ThemedText>
+          <ThemedText type="subtitle">航行日志</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            {diary.length} 篇日记
+            已记录 {diary.length} 段旅程
           </ThemedText>
         </ThemedView>
 
@@ -91,8 +94,8 @@ export default function DiaryScreen() {
           ListEmptyComponent={
             <ThemedView type="backgroundElement" style={styles.empty}>
               <ThemedText style={styles.emptyEmoji}>📝</ThemedText>
-              <ThemedText type="default" themeColor="textSecondary">还没有日记</ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">写下你的第一篇文章吧</ThemedText>
+              <ThemedText type="default" themeColor="textSecondary">航行日志还是空的</ThemedText>
+              <ThemedText type="small" themeColor="textSecondary">写下此刻，点亮第一颗记忆星</ThemedText>
             </ThemedView>
           }
           renderItem={({ item }) => (
@@ -102,7 +105,18 @@ export default function DiaryScreen() {
                   <ThemedText type="default" style={styles.diaryTitle}>
                     {item.moodEmoji ? `${item.moodEmoji} ` : ''}{item.title}
                   </ThemedText>
-                  <ThemedText type="small" themeColor="textSecondary">{formatDate(item.createdAt)}</ThemedText>
+                  <ThemedView style={styles.diaryMeta}>
+                    <ThemedText type="small" themeColor="textSecondary">{formatDate(item.createdAt)}</ThemedText>
+                    <Pressable
+                      hitSlop={8}
+                      onPress={(event) => {
+                        event.stopPropagation();
+                        deleteDiary(item);
+                      }}
+                    >
+                      <FontAwesome name="trash-o" size={15} color="#FF3B30" />
+                    </Pressable>
+                  </ThemedView>
                 </ThemedView>
                 <ThemedText type="small" themeColor="textSecondary" numberOfLines={3} style={styles.diaryPreview}>
                   {item.content}
@@ -131,7 +145,7 @@ export default function DiaryScreen() {
             style={styles.modalOverlay}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           >
-            <ThemedView style={styles.modalContent}>
+            <ThemedView type="backgroundElement" style={styles.modalContent}>
               <ThemedText type="subtitle" style={styles.modalTitle}>
                 {editingId ? '编辑日记' : '写日记'}
               </ThemedText>
@@ -225,6 +239,7 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   diaryTitle: { fontWeight: '600', flex: 1 },
+  diaryMeta: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
   diaryPreview: { lineHeight: 20, opacity: 0.7 },
   tagsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.one },
   tag: {

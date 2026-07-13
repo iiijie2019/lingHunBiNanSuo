@@ -6,42 +6,36 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { ACHIEVEMENTS, getUnlocked, CATEGORY_CONFIG, type Achievement } from '@/constants/achievements';
-import { Spacing } from '@/constants/theme';
-import { useStore } from '@/stores/useStore';
+import { ACHIEVEMENTS, getUnlocked, CATEGORY_CONFIG } from '@/constants/achievements';
+import { BrandColors, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
+import { today, useStore } from '@/stores/useStore';
+import { shiftLocalDateKey } from '@/utils/local-date';
 
 /** Calculate consecutive days from today backwards for habit completion */
 function calcStreak(completedDates: Set<string>): number {
   let streak = 0;
-  const d = new Date();
-  while (true) {
-    const key = d.toISOString().slice(0, 10);
-    if (completedDates.has(key)) {
-      streak++;
-      d.setDate(d.getDate() - 1);
-    } else {
-      const todayKey = new Date().toISOString().slice(0, 10);
-      if (key === todayKey) {
-        d.setDate(d.getDate() - 1);
-        continue;
-      }
-      break;
-    }
+  let key = today();
+  if (!completedDates.has(key)) key = shiftLocalDateKey(key, -1);
+  while (completedDates.has(key)) {
+    streak++;
+    key = shiftLocalDateKey(key, -1);
   }
   return streak;
 }
 
 const MENU_ITEMS = [
-  { icon: 'book' as const, title: '日记', href: '/diary' as Href, color: '#AF52DE' },
-  { icon: 'database' as const, title: '数据管理', href: '/data' as Href, color: '#FF9500' },
-  { icon: 'cog' as const, title: '设置', href: null, color: '#208AEF' },
-  { icon: 'question-circle' as const, title: '帮助与反馈', href: null, color: '#34C759' },
+  { icon: 'book' as const, title: '日记', href: '/diary' as Href, color: BrandColors.cosmicViolet },
+  { icon: 'database' as const, title: '数据管理', href: '/data' as Href, color: BrandColors.solar },
+  { icon: 'cog' as const, title: '设置', href: null, color: BrandColors.cometBlue },
+  { icon: 'question-circle' as const, title: '帮助与反馈', href: null, color: BrandColors.aurora },
   { icon: 'info-circle' as const, title: '关于', href: null, color: '#999' },
 ];
 
 export default function ProfileScreen() {
+  const theme = useTheme();
   const state = useStore();
-  const { habits, moods, diary } = state;
+  const { habits, diary } = state;
 
   const totalCompletedDates = useMemo(() => {
     const dates = new Set<string>();
@@ -54,47 +48,39 @@ export default function ProfileScreen() {
   const unlocked = useMemo(() => getUnlocked(state), [state]);
   const totalAchievements = ACHIEVEMENTS.length;
 
-  // Group by category, take first 3 per category for compact display
-  const grouped = useMemo(() => {
-    const map: Record<string, Achievement[]> = {};
-    unlocked.forEach((a) => {
-      if (!map[a.category]) map[a.category] = [];
-      map[a.category].push(a);
-    });
-    return map;
-  }, [unlocked]);
-
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView cosmic style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           {/* 头像区域 */}
           <ThemedView style={styles.avatarSection}>
-            <ThemedView type="backgroundElement" style={styles.avatar}>
-              <FontAwesome name="user" size={36} color="#208AEF" />
+            <ThemedView style={[styles.avatarOrbit, { borderColor: `${theme.primary}30` }]}>
+              <ThemedView type="backgroundElement" style={[styles.avatar, { borderColor: `${theme.primary}55` }]}>
+                <FontAwesome name="rocket" size={32} color={theme.primary} />
+              </ThemedView>
             </ThemedView>
-            <ThemedText type="subtitle">灵魂旅人</ThemedText>
+            <ThemedText type="subtitle">时间旅人</ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
-              {unlocked.length > 0 ? `已解锁 ${unlocked.length}/${totalAchievements} 个成就` : '记录生活，解锁成就'}
+              {unlocked.length > 0 ? `星图进度 ${unlocked.length}/${totalAchievements} · 继续探索` : '从今天出发，记录属于你的星图'}
             </ThemedText>
           </ThemedView>
 
           {/* 统计小卡片 */}
           <ThemedView style={styles.statsRow}>
-            <ThemedView type="backgroundElement" style={styles.statItem}>
-              <ThemedText type="title" style={styles.statNum}>{habits.length}</ThemedText>
+            <ThemedView type="backgroundElement" style={[styles.statItem, { borderColor: `${BrandColors.aurora}30` }]}>
+              <ThemedText type="title" style={[styles.statNum, { color: BrandColors.aurora }]}>{habits.length}</ThemedText>
               <ThemedText type="small" themeColor="textSecondary">习惯</ThemedText>
             </ThemedView>
-            <ThemedView type="backgroundElement" style={styles.statItem}>
-              <ThemedText type="title" style={styles.statNum}>{moods.length}</ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">心情</ThemedText>
+            <ThemedView type="backgroundElement" style={[styles.statItem, { borderColor: `${BrandColors.novaRose}30` }]}>
+              <ThemedText type="title" style={[styles.statNum, { color: BrandColors.novaRose }]}>{unlocked.length}</ThemedText>
+              <ThemedText type="small" themeColor="textSecondary">勋章</ThemedText>
             </ThemedView>
-            <ThemedView type="backgroundElement" style={styles.statItem}>
-              <ThemedText type="title" style={styles.statNum}>{(diary ?? []).length}</ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">日记</ThemedText>
+            <ThemedView type="backgroundElement" style={[styles.statItem, { borderColor: `${BrandColors.cosmicViolet}30` }]}>
+              <ThemedText type="title" style={[styles.statNum, { color: BrandColors.cosmicViolet }]}>{(diary ?? []).length}</ThemedText>
+              <ThemedText type="small" themeColor="textSecondary">日志</ThemedText>
             </ThemedView>
-            <ThemedView type="backgroundElement" style={styles.statItem}>
-              <ThemedText type="title" style={styles.statNum}>{streak}天</ThemedText>
+            <ThemedView type="backgroundElement" style={[styles.statItem, { borderColor: `${BrandColors.solar}30` }]}>
+              <ThemedText type="title" style={[styles.statNum, { color: BrandColors.solar }]}>{streak}天</ThemedText>
               <ThemedText type="small" themeColor="textSecondary">连续</ThemedText>
             </ThemedView>
           </ThemedView>
@@ -102,7 +88,7 @@ export default function ProfileScreen() {
           {/* 成就徽章 */}
           <ThemedView style={styles.sectionHeader}>
             <ThemedText type="smallBold" themeColor="textSecondary">
-              🏆 成就徽章 ({unlocked.length}/{totalAchievements})
+              ✦ 探索勋章 ({unlocked.length}/{totalAchievements})
             </ThemedText>
           </ThemedView>
 
@@ -151,12 +137,16 @@ export default function ProfileScreen() {
           <ThemedView type="backgroundElement" style={styles.menuSection}>
             {MENU_ITEMS.map(({ icon, title, href, color }) => {
               const inner = (
-                <ThemedView style={styles.menuItem}>
+                <ThemedView key={title} style={[styles.menuItem, !href && styles.menuItemDisabled]}>
                   <ThemedView style={[styles.menuIconBox, { backgroundColor: color + '15' }]}>
                     <FontAwesome name={icon} size={18} color={color} />
                   </ThemedView>
                   <ThemedText type="default" style={styles.menuTitle}>{title}</ThemedText>
-                  <FontAwesome name="angle-right" size={16} color="#999" />
+                  {href ? (
+                    <FontAwesome name="angle-right" size={16} color="#999" />
+                  ) : (
+                    <ThemedText type="small" themeColor="textSecondary">开发中</ThemedText>
+                  )}
                 </ThemedView>
               );
 
@@ -167,7 +157,7 @@ export default function ProfileScreen() {
                   </Link>
                 );
               }
-              return <Pressable key={title}>{inner}</Pressable>;
+              return inner;
             })}
           </ThemedView>
 
@@ -189,18 +179,22 @@ const styles = StyleSheet.create({
 
   // Avatar
   avatarSection: { alignItems: 'center', gap: Spacing.two, paddingTop: Spacing.five },
+  avatarOrbit: {
+    width: 106, height: 106, borderRadius: 53, borderWidth: 1,
+    alignItems: 'center', justifyContent: 'center',
+  },
   avatar: {
     width: 84, height: 84, borderRadius: 42,
-    alignItems: 'center', justifyContent: 'center',
+    alignItems: 'center', justifyContent: 'center', borderWidth: 1,
   },
 
   // Stats
   statsRow: { flexDirection: 'row', gap: Spacing.two },
   statItem: {
     flex: 1, alignItems: 'center', paddingVertical: Spacing.two,
-    borderRadius: Spacing.three,
+    borderRadius: Spacing.three, borderWidth: StyleSheet.hairlineWidth,
   },
-  statNum: { fontSize: 22, lineHeight: 28, color: '#208AEF' },
+  statNum: { fontSize: 22, lineHeight: 28 },
 
   // Section
   sectionHeader: { paddingTop: Spacing.two },
@@ -219,7 +213,7 @@ const styles = StyleSheet.create({
   badgeTitleLocked: { opacity: 0.4 },
 
   // Menu
-  menuSection: { borderRadius: Spacing.three },
+  menuSection: { borderRadius: 20, overflow: 'hidden' },
   menuItem: {
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: Spacing.four, paddingVertical: Spacing.three,
@@ -230,6 +224,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   menuTitle: { flex: 1 },
+  menuItemDisabled: { opacity: 0.55 },
 
   version: { paddingBottom: Spacing.four, textAlign: 'center', opacity: 0.5 },
 });

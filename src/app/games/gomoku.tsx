@@ -1,6 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -57,6 +57,7 @@ export default function GomokuScreen() {
   const [winner, setWinner] = useState<string | null>(null);
   const [lastMove, setLastMove] = useState<[number,number]|null>(null);
   const thinkingRef = useRef(false);
+  const aiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const place = useCallback((r: number, c: number) => {
     if (board[r][c] || winner || thinkingRef.current || turn !== 'black') return;
@@ -68,14 +69,15 @@ export default function GomokuScreen() {
     if (newBoard.every(row => row.every(cell => cell))) { setWinner('平局'); return; }
     setTurn('white');
     thinkingRef.current = true;
-    setTimeout(() => {
+    aiTimerRef.current = setTimeout(() => {
       const ai = aiMove(newBoard);
       if (ai) {
         const [ar, ac] = ai;
-        newBoard[ar][ac] = 'white';
-        setBoard(newBoard);
+        const aiBoard = newBoard.map((row) => [...row]);
+        aiBoard[ar][ac] = 'white';
+        setBoard(aiBoard);
         setLastMove([ar, ac]);
-        if (checkWin(newBoard, ar, ac, 'white')) { setWinner('AI 赢了'); thinkingRef.current = false; return; }
+        if (checkWin(aiBoard, ar, ac, 'white')) { setWinner('AI 赢了'); thinkingRef.current = false; return; }
       }
       setTurn('black');
       thinkingRef.current = false;
@@ -83,6 +85,7 @@ export default function GomokuScreen() {
   }, [board, winner, turn]);
 
   const reset = () => {
+    if (aiTimerRef.current) clearTimeout(aiTimerRef.current);
     setBoard(Array.from({length:SIZE},()=>Array(SIZE).fill(null)));
     setTurn('black');
     setWinner(null);
@@ -90,10 +93,14 @@ export default function GomokuScreen() {
     thinkingRef.current = false;
   };
 
+  useEffect(() => () => {
+    if (aiTimerRef.current) clearTimeout(aiTimerRef.current);
+  }, []);
+
   const boardPixel = CELL * SIZE;
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView cosmic style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           <Pressable style={styles.backRow} onPress={() => router.dismiss()}>

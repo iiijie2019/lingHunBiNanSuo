@@ -99,7 +99,7 @@ export default function DecisionWheelScreen() {
       setSpinning(false);
       setHistory((h) => [prizes[target].name, ...h].slice(0, 8));
     });
-  }, [spinning, prizes]);
+  }, [prizes, spinValue, spinning]);
 
   // ---- 构建 SVG 扇形 ----
   const segments: { d: string; color: string; label: string; tx: number; ty: number; rot: number }[] = [];
@@ -138,7 +138,7 @@ export default function DecisionWheelScreen() {
 
   // ===== RENDER =====
   return (
-    <ThemedView style={s.container}>
+    <ThemedView cosmic style={s.container}>
       <SafeAreaView style={s.safe} edges={['top']}>
         <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
           {/* 顶部栏 */}

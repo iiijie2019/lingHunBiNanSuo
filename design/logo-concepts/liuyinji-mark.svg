@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">流银纪透明 Logo 标记</title>
+  <desc id="desc">透明背景的银色流沙沙漏与顺时针双流星轨迹</desc>
+  <defs>
+    <g id="hourglass-half" fill="none" stroke="#DCE5EC" stroke-width="44" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M354 280H670"/>
+      <path d="M368 302C402 378 452 438 512 500C572 438 622 378 656 302"/>
+    </g>
+    <path id="silver-sand" d="M414 346H610C590 386 555 430 522 466Q512 477 502 466C469 430 434 386 414 346Z"/>
+    <linearGradient id="meteor-tail" gradientUnits="userSpaceOnUse" x1="261" y1="657" x2="290" y2="326">
+      <stop offset="0" stop-color="#71899B" stop-opacity="0.08"/>
+      <stop offset="0.42" stop-color="#71899B" stop-opacity="0.45"/>
+      <stop offset="0.78" stop-color="#B8C8D3" stop-opacity="0.86"/>
+      <stop offset="1" stop-color="#F1F6F9"/>
+    </linearGradient>
+    <g id="meteor">
+      <path d="M290 326A290 290 0 0 0 261 657" fill="none" stroke="url(#meteor-tail)" stroke-width="11" stroke-linecap="round"/>
+      <circle cx="290" cy="326" r="15" fill="#DCE5EC" opacity="0.14"/>
+      <circle cx="290" cy="326" r="8" fill="#F1F6F9"/>
+    </g>
+  </defs>
+  <circle cx="512" cy="512" r="368" fill="none" stroke="#183043" stroke-width="18"/>
+  <use href="#hourglass-half"/>
+  <use href="#hourglass-half" transform="rotate(180 512 512)"/>
+  <g fill="#71899B">
+    <use href="#silver-sand"/>
+    <use href="#silver-sand" transform="rotate(180 512 512)"/>
+  </g>
+  <path d="M512 466V558" fill="none" stroke="#DCE5EC" stroke-width="12" stroke-linecap="round"/>
+  <use href="#meteor"/>
+  <use href="#meteor" transform="rotate(180 512 512)"/>
+</svg>

@@ -1,7 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
-  Alert,
   FlatList,
   KeyboardAvoidingView,
   Modal,
@@ -19,6 +18,7 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { HabitRow } from '@/features/habits/habit-row';
 import { today, useDispatch, useStore, type Habit } from '@/stores/useStore';
+import { confirmAction } from '@/utils/confirm-action';
 
 const EMOJI_OPTIONS = ['🏃', '📚', '💧', '🧘', '💻', '🎸', '✍️', '🍎', '😴', '🚭', '💊', '🎯'];
 
@@ -45,20 +45,20 @@ export default function HabitsScreen() {
   };
 
   const deleteHabit = (habit: Habit) => {
-    Alert.alert('删除习惯', `确定要删除「${habit.emoji} ${habit.name}」吗？`, [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '删除', style: 'destructive',
-        onPress: () => dispatch({ type: 'DELETE_HABIT', id: habit.id }),
-      },
-    ]);
+    confirmAction({
+      title: '删除习惯',
+      message: `确定要删除「${habit.emoji} ${habit.name}」吗？`,
+      confirmText: '删除',
+      destructive: true,
+      onConfirm: () => dispatch({ type: 'DELETE_HABIT', id: habit.id }),
+    });
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView cosmic style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ThemedView style={styles.header}>
-          <ThemedText type="subtitle">习惯打卡</ThemedText>
+          <ThemedText type="subtitle">每日推进器</ThemedText>
           <ThemedView style={styles.badge}>
             <ThemedText type="smallBold" style={styles.badgeText}>
               {completedToday}/{habits.length} 今日
@@ -72,7 +72,7 @@ export default function HabitsScreen() {
               <ThemedView style={[styles.progressFill, { width: `${progress * 100}%` }]} />
             </ThemedView>
             <ThemedText type="small" themeColor="textSecondary">
-              {progress >= 1 ? '🎉 全部完成！' : `${Math.round(progress * 100)}% 已完成`}
+              {progress >= 1 ? '✨ 今日航程全部完成！' : `今日航程已推进 ${Math.round(progress * 100)}%`}
             </ThemedText>
           </ThemedView>
         )}
@@ -83,12 +83,12 @@ export default function HabitsScreen() {
           contentContainerStyle={styles.list}
           ListEmptyComponent={
             <ThemedView type="backgroundElement" style={styles.empty}>
-              <ThemedText style={styles.emptyEmoji}>🎯</ThemedText>
+              <ThemedText style={styles.emptyEmoji}>🚀</ThemedText>
               <ThemedText type="default" themeColor="textSecondary">
-                还没有习惯
+                还没有设定推进目标
               </ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
-                点击下方按钮开始添加
+                添加一个小目标，开启今天的航程
               </ThemedText>
             </ThemedView>
           }
@@ -114,7 +114,7 @@ export default function HabitsScreen() {
             keyboardVerticalOffset={Platform.OS === 'android' ? -40 : 0}
           >
             <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)} />
-            <ThemedView style={[styles.modalContent, isDark && styles.modalContentDark]}>
+            <ThemedView type="backgroundElement" style={[styles.modalContent, isDark && styles.modalContentDark]}>
               <ThemedView style={styles.modalHandle} />
               <ThemedText type="subtitle" style={styles.modalTitle}>新建习惯</ThemedText>
 
