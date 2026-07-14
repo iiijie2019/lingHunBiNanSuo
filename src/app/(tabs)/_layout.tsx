@@ -1,21 +1,19 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { StyleSheet, useColorScheme, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { BrandColors, Colors } from '@/constants/theme';
+import { BrandColors } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 const TABS = [
   { name: 'index', title: '航程', icon: 'home' },
   { name: 'games', title: '挑战', icon: 'gamepad' },
-  { name: 'utilities', title: '装备', icon: 'wrench' },
-  { name: 'profile', title: '星图', icon: 'rocket' },
+  { name: 'profile', title: '我的', icon: 'user' },
 ] as const;
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const scheme = colorScheme === 'unspecified' ? 'light' : colorScheme;
-  const colors = Colors[scheme];
+  const colors = useTheme();
 
   return (
     <Tabs

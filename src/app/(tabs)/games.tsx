@@ -73,15 +73,6 @@ const GAMES: GameItem[] = [
     badge: '棋类',
   },
   {
-    route: '/games/idiom-chain' as const,
-    gameKey: null,
-    icon: 'font' as const,
-    color: BrandColors.cosmicViolet,
-    title: '成语接龙',
-    desc: '尾字接龙，和AI一决高下',
-    badge: '文字',
-  },
-  {
     route: '/games/color-word' as const,
     gameKey: 'colorWord' as const,
     icon: 'eye' as const,

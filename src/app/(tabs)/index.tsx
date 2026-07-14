@@ -125,12 +125,6 @@ export default function HomeScreen() {
               color={BrandColors.cosmicViolet}
               label="档案"
             />
-            <QuickLink
-              href="/profile"
-              icon="rocket"
-              color={BrandColors.cometBlue}
-              label="旅程"
-            />
           </ThemedView>
 
           {/* 最近日志 */}

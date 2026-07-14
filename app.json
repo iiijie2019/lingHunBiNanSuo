@@ -4,11 +4,13 @@
     "description": "记录生活，沿时间之流探索未知。",
     "slug": "rnTestProject",
     "version": "1.0.0",
+    "backgroundColor": "#081A2F",
     "orientation": "portrait",
     "icon": "./assets/images/liuyinji-icon-opaque.png",
     "scheme": "rntestproject",
     "userInterfaceStyle": "automatic",
     "ios": {
+      "backgroundColor": "#081A2F",
       "icon": "./assets/images/liuyinji-icon-opaque.png",
       "bundleIdentifier": "com.yangwujie.rnTestProject"
     },
@@ -40,7 +42,8 @@
           }
         }
       ],
-      "expo-sharing"
+      "expo-sharing",
+      "expo-system-ui"
     ],
     "experiments": {
       "typedRoutes": true,

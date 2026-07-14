@@ -9,7 +9,6 @@ import {
   ScrollView,
   StyleSheet,
   TextInput,
-  useColorScheme,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -17,6 +16,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { HabitRow } from '@/features/habits/habit-row';
+import { useTheme } from '@/hooks/use-theme';
 import { today, useDispatch, useStore, type Habit } from '@/stores/useStore';
 import { confirmAction } from '@/utils/confirm-action';
 
@@ -25,8 +25,7 @@ const EMOJI_OPTIONS = ['🏃', '📚', '💧', '🧘', '💻', '🎸', '✍️',
 export default function HabitsScreen() {
   const { habits } = useStore();
   const dispatch = useDispatch();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const theme = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEmoji, setNewEmoji] = useState('🏃');
@@ -114,7 +113,7 @@ export default function HabitsScreen() {
             keyboardVerticalOffset={Platform.OS === 'android' ? -40 : 0}
           >
             <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)} />
-            <ThemedView type="backgroundElement" style={[styles.modalContent, isDark && styles.modalContentDark]}>
+            <ThemedView type="backgroundElement" style={styles.modalContent}>
               <ThemedView style={styles.modalHandle} />
               <ThemedText type="subtitle" style={styles.modalTitle}>新建习惯</ThemedText>
 
@@ -134,7 +133,7 @@ export default function HabitsScreen() {
               <ThemedText type="smallBold" themeColor="textSecondary">习惯名称</ThemedText>
               <ThemedView type="backgroundElement" style={styles.inputWrapper}>
                 <TextInput
-                  style={[styles.input, { color: isDark ? '#FFFFFF' : '#000000' }]}
+                  style={[styles.input, { color: theme.text }]}
                   placeholder="例如：每天阅读30分钟"
                   placeholderTextColor="#999"
                   value={newName}
@@ -206,7 +205,6 @@ const styles = StyleSheet.create({
     padding: Spacing.four, gap: Spacing.three, paddingBottom: Spacing.six,
     marginTop: 'auto',
   },
-  modalContentDark: { backgroundColor: '#1C1C1E' },
   modalHandle: {
     width: 36, height: 4, borderRadius: 2, backgroundColor: '#C0C0C0',
     alignSelf: 'center', marginBottom: Spacing.one,

@@ -22,26 +22,46 @@ export const BrandColors = {
   novaRose: '#FF6B8A',
 } as const;
 
-export const Colors = {
-  light: {
-    text: '#000000',
-    background: '#F2F7FB',
-    backgroundElement: '#FFFFFF',
-    backgroundSelected: '#DCEAF4',
-    textSecondary: '#536A7B',
-    primary: BrandColors.deepSpace,
+export const ThemePresets = {
+  default: {
+    label: '默认主题',
+    description: '明亮、清透的星际蓝',
+    colorScheme: 'light',
+    colors: {
+      text: '#000000',
+      background: '#F2F7FB',
+      backgroundElement: '#FFFFFF',
+      backgroundSelected: '#DCEAF4',
+      textSecondary: '#536A7B',
+      primary: BrandColors.deepSpace,
+    },
   },
   dark: {
-    text: BrandColors.starlight,
-    background: BrandColors.deepSpace,
-    backgroundElement: '#102B49',
-    backgroundSelected: '#1A4268',
-    textSecondary: BrandColors.silver,
-    primary: BrandColors.cometBlue,
+    label: '深色主题',
+    description: '适合夜间使用的深空配色',
+    colorScheme: 'dark',
+    colors: {
+      text: BrandColors.starlight,
+      background: BrandColors.deepSpace,
+      backgroundElement: '#102B49',
+      backgroundSelected: '#1A4268',
+      textSecondary: BrandColors.silver,
+      primary: BrandColors.cometBlue,
+    },
   },
 } as const;
 
-export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
+export type ThemeId = keyof typeof ThemePresets;
+export type ThemeColor = keyof (typeof ThemePresets)['default']['colors'];
+export type ThemeColors = { [Color in ThemeColor]: string };
+
+export const DefaultThemeId: ThemeId = 'default';
+
+/** Backwards-compatible color aliases for modules that only need the palettes. */
+export const Colors = {
+  light: ThemePresets.default.colors,
+  dark: ThemePresets.dark.colors,
+} as const;
 
 export const Fonts = Platform.select({
   ios: {

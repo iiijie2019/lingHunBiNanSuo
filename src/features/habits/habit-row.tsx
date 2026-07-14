@@ -5,7 +5,7 @@ import { Pressable, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
-import { useDispatch, today, type Habit } from '@/stores/useStore';
+import { today, useDispatch, type Habit } from '@/stores/useStore';
 import { shiftLocalDateKey } from '@/utils/local-date';
 
 export function HabitRow({ habit, onDelete }: { habit: Habit; onDelete: () => void }) {

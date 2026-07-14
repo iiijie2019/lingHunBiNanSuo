@@ -1,12 +1,14 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, TextInput, useColorScheme } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { useThemeSettings } from '@/contexts/theme-context';
+import { useTheme } from '@/hooks/use-theme';
 import { useDispatch, useStore } from '@/stores/useStore';
 
 function pickNumber() {
@@ -14,7 +16,9 @@ function pickNumber() {
 }
 
 export default function GuessNumberScreen() {
-  const isDark = useColorScheme() === 'dark';
+  const theme = useTheme();
+  const { colorScheme } = useThemeSettings();
+  const isDark = colorScheme === 'dark';
   const dispatch = useDispatch();
   const { gameRecords } = useStore();
   const bestRecord = gameRecords.guessNumber;
@@ -169,7 +173,7 @@ export default function GuessNumberScreen() {
                   <ThemedView type="backgroundElement" style={styles.inputWrapper}>
                     <TextInput
                       ref={inputRef}
-                      style={[styles.input, { color: isDark ? '#FFFFFF' : '#000000' }]}
+                      style={[styles.input, { color: theme.text }]}
                       value={guess}
                       onChangeText={setGuess}
                       keyboardType="number-pad"

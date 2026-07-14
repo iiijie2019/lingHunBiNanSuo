@@ -1,12 +1,19 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
 import { Stack } from 'expo-router';
-import React from 'react';
-import { useColorScheme } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import * as SystemUI from 'expo-system-ui';
+import React, { useEffect } from 'react';
+import { Platform } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import { BrandColors, Colors } from '@/constants/theme';
+import { BrandColors } from '@/constants/theme';
+import { AppThemeProvider, useThemeSettings } from '@/contexts/theme-context';
 import { StoreProvider } from '@/stores/useStore';
+
+// Set a dark-safe native root color before React mounts so no white system
+// surface can appear while the persisted theme is being restored.
+void SystemUI.setBackgroundColorAsync(BrandColors.deepSpace);
 
 SplashScreen.setOptions({
   duration: 200,
@@ -15,9 +22,16 @@ SplashScreen.setOptions({
 void SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  return (
+    <AppThemeProvider>
+      <RootNavigator />
+    </AppThemeProvider>
+  );
+}
+
+function RootNavigator() {
+  const { colorScheme, colors } = useThemeSettings();
   const isDark = colorScheme === 'dark';
-  const colors = isDark ? Colors.dark : Colors.light;
   const navigationTheme = {
     ...(isDark ? DarkTheme : DefaultTheme),
     colors: {
@@ -31,11 +45,27 @@ export default function RootLayout() {
     },
   };
 
+  useEffect(() => {
+    // Keep the native root view in sync with the active theme. Native stack
+    // transitions can briefly reveal this layer around the moving screens.
+    void SystemUI.setBackgroundColorAsync(colors.background);
+  }, [colors.background]);
+
   return (
     <StoreProvider>
       <ThemeProvider value={navigationTheme}>
+        <StatusBar style={isDark ? 'light' : 'dark'} />
         <AnimatedSplashOverlay />
-        <Stack screenOptions={{ headerShown: false, freezeOnBlur: true }} />
+        <Stack
+          screenOptions={{
+            animation: Platform.OS === 'web' ? 'fade' : 'slide_from_right',
+            contentStyle: { backgroundColor: colors.background },
+            freezeOnBlur: true,
+            gestureDirection: 'horizontal',
+            gestureEnabled: true,
+            headerShown: false,
+          }}
+        />
       </ThemeProvider>
     </StoreProvider>
   );

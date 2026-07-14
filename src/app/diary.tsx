@@ -9,7 +9,6 @@ import {
   Pressable,
   StyleSheet,
   TextInput,
-  useColorScheme,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -17,13 +16,14 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { MOOD_OPTIONS } from '@/features/mood/mood-row';
+import { useTheme } from '@/hooks/use-theme';
 import { useDispatch, useStore, type DiaryEntry } from '@/stores/useStore';
 import { confirmAction } from '@/utils/confirm-action';
 
 export default function DiaryScreen() {
   const { diary } = useStore();
   const dispatch = useDispatch();
-  const isDark = useColorScheme() === 'dark';
+  const theme = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
@@ -168,7 +168,7 @@ export default function DiaryScreen() {
               <ThemedText type="smallBold" themeColor="textSecondary">标题</ThemedText>
               <ThemedView type="backgroundElement" style={styles.inputWrapper}>
                 <TextInput
-                  style={[styles.titleInput, { color: isDark ? '#FFFFFF' : '#000000' }]}
+                  style={[styles.titleInput, { color: theme.text }]}
                   placeholder="今天发生了什么..."
                   placeholderTextColor="#999"
                   value={title}
@@ -180,7 +180,7 @@ export default function DiaryScreen() {
               <ThemedText type="smallBold" themeColor="textSecondary">正文</ThemedText>
               <ThemedView type="backgroundElement" style={styles.inputWrapper}>
                 <TextInput
-                  style={[styles.contentInput, { color: isDark ? '#FFFFFF' : '#000000' }]}
+                  style={[styles.contentInput, { color: theme.text }]}
                   placeholder="写下你的想法..."
                   placeholderTextColor="#999"
                   value={content}
