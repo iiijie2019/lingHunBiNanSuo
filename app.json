@@ -1,18 +1,23 @@
 {
   "expo": {
-    "name": "流银纪",
+    "name": "夜航",
     "description": "记录生活，沿时间之流探索未知。",
     "slug": "rnTestProject",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "backgroundColor": "#081A2F",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/liuyinji-icon-opaque.png",
     "scheme": "rntestproject",
     "userInterfaceStyle": "automatic",
     "ios": {
       "backgroundColor": "#081A2F",
       "icon": "./assets/images/liuyinji-icon-opaque.png",
-      "bundleIdentifier": "com.yangwujie.rnTestProject"
+      "bundleIdentifier": "com.yangwujie.rnTestProject",
+      "buildNumber": "2",
+      "requireFullScreen": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "icon": "./assets/images/liuyinji-icon-opaque.png",
@@ -20,6 +25,7 @@
         "backgroundColor": "#081A2F",
         "foregroundImage": "./assets/images/liuyinji-mark.png"
       },
+      "versionCode": 2,
       "predictiveBackGestureEnabled": false,
       "package": "com.yangwujie.rnTestProject"
     },
@@ -44,6 +50,12 @@
       ],
       "expo-sharing",
       "expo-system-ui",
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "DEFAULT"
+        }
+      ],
       [
         "expo-build-properties",
         {

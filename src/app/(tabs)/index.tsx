@@ -38,7 +38,7 @@ export default function HomeScreen() {
           {/* 头部 */}
           <ThemedView style={styles.header}>
             <ThemedView style={styles.headerLeft}>
-              <ThemedText type="smallBold" style={{ color: theme.primary }}>流银纪 · 今日航程</ThemedText>
+              <ThemedText type="smallBold" style={{ color: theme.primary }}>夜航 · 今日航程</ThemedText>
               <ThemedText style={styles.greeting}>你好，时间旅人</ThemedText>
               <ThemedText type="default" themeColor="textSecondary">
                 周{weekday} · {dateStr}
@@ -126,6 +126,29 @@ export default function HomeScreen() {
               label="档案"
             />
           </ThemedView>
+
+          <Pressable
+            accessibilityLabel="打开视频播放器测试"
+            accessibilityRole="link"
+            onPress={() => router.push('/video-player' as Href)}
+            style={({ pressed }) => [styles.videoTestEntry, pressed && styles.pressed]}
+          >
+            <ThemedView
+              type="backgroundElement"
+              style={[styles.videoTestCard, { borderColor: `${theme.primary}42` }]}
+            >
+              <ThemedView style={[styles.videoTestIcon, { backgroundColor: `${theme.primary}1C` }]}>
+                <FontAwesome name="play-circle" size={22} color={theme.primary} />
+              </ThemedView>
+              <ThemedView style={styles.videoTestCopy}>
+                <ThemedText type="smallBold">视频播放器测试</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary" numberOfLines={1}>
+                  全屏横竖屏、快进快退与全局小窗
+                </ThemedText>
+              </ThemedView>
+              <FontAwesome name="angle-right" size={18} color={theme.textSecondary} />
+            </ThemedView>
+          </Pressable>
 
           {/* 最近日志 */}
           {recentLogs.length > 0 && (
@@ -265,6 +288,20 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   quickLinkTitle: { width: '100%', fontSize: 11, lineHeight: 14, textAlign: 'center' },
+
+  // Video player test entry
+  videoTestEntry: { width: '100%' },
+  videoTestCard: {
+    minHeight: 76,
+    borderRadius: 20,
+    borderWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+    paddingHorizontal: Spacing.three,
+  },
+  videoTestIcon: { width: 46, height: 46, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
+  videoTestCopy: { flex: 1, minWidth: 0, gap: 3 },
 
   // Recent logs
   logList: { borderRadius: 18, overflow: 'hidden' },

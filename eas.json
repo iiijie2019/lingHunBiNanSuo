@@ -6,7 +6,7 @@
   "build": {
     "production": {
       "env": {
-        "APP_NAME": "灵魂避难所",
+        "APP_NAME": "夜航",
         "NODE_ENV": "production"
       },
       "android": {
@@ -24,7 +24,7 @@
     },
     "development": {
       "env": {
-        "APP_NAME": "灵魂避难所-dev",
+        "APP_NAME": "夜航-dev",
         "DEV_FEATURES": "true"
       },
       "developmentClient": true,

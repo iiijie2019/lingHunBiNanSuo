@@ -48,9 +48,9 @@ export function AnimatedSplashOverlay() {
   return (
     <Animated.View pointerEvents="none" style={[styles.overlay, { opacity }]}>
       <Animated.View style={[styles.brand, { transform: [{ scale }] }]}>
-        <LogoSpinner size={172} duration={900} accessibilityLabel="流银纪正在启动" />
+        <LogoSpinner size={172} duration={900} accessibilityLabel="夜航正在启动" />
         <View style={styles.copy}>
-          <Text style={styles.name}>流银纪</Text>
+          <Text style={styles.name}>夜航</Text>
           <Text style={styles.tagline}>沿时间之流，驶向未知</Text>
         </View>
       </Animated.View>
